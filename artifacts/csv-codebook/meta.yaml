@@ -1,0 +1,43 @@
+title: Paste a CSV, Get a Codebook
+summary: Profiles a delimited file in the browser — types, missingness, distributions,
+  outliers — and writes the data dictionary for you.
+tier: source
+
+use_case: [data-research]
+style: data-explorer
+topics: [data-quality, statistics, csv]
+techniques: [file-upload, charts, svg]
+design: brutalist
+
+source: artifact.html
+
+prompt: |
+  A local-only CSV explorer as one self-contained HTML file.
+
+  Drop a file on the page, paste raw text, or pick a file. Sniff the delimiter,
+  parse it properly (quoted fields, embedded newlines, BOM), then profile every
+  column: inferred type, percentage missing, distinct count, and a distribution
+  — a histogram for numeric columns and a top-values bar chart for categorical
+  ones, both as inline SVG.
+
+  Flag the things that matter before analysis: candidate keys, constant columns,
+  anything over 20% missing, values beyond 1.5×IQR, and dates where day and
+  month are both under 13 and the order is genuinely ambiguous. Then generate a
+  copyable markdown data dictionary with those notes appended.
+
+  Ship a deliberately messy sample dataset loaded on first paint so the page is
+  never empty. Handle 50,000 rows without freezing. Nothing leaves the browser —
+  say so on the page.
+
+  Brutalist visual treatment: white and black, one orange accent, 2px borders on
+  everything, zero radius, huge Times headings, hard-edged tables. Light and
+  dark. No network, no libraries.
+customize:
+  - Replace SAMPLE with your own dataset so the page opens on something familiar.
+  - Adjust the 20% missingness and 1.5×IQR thresholds in render() to your field's norms.
+  - Ask Claude to add a correlation matrix across the numeric columns.
+  - Ask Claude to emit the dictionary as JSON Schema instead of markdown.
+technical: false
+
+author: { name: zoltlabs, github: zoltlabs }
+license: MIT

@@ -1,0 +1,45 @@
+title: State of the Municipal Tree Canopy
+summary: A long-form findings report on canopy loss across a fictional city's wards, with
+  six figures, footnotes and a methods appendix that states its own limits.
+tier: source
+
+use_case: [data-research, consulting]
+style: report
+topics: [urban-planning, environment, local-government]
+techniques: [charts, svg, print-ready]
+design: archival
+
+source: artifact.html
+
+prompt: |
+  A long-form HTML research report on urban tree canopy loss in a fictional
+  mid-sized city, as one self-contained file.
+
+  Seven sections and an appendix: summary of findings, method in brief, where
+  the canopy went, who lost it, why (a species monoculture meeting a pathogen),
+  what replacement planting actually delivers, and what follows. Six numbered
+  figures generated as inline SVG from data arrays in the file — a dumbbell
+  chart by ward, a citywide trend against an adopted target, canopy against
+  deprivation decile with a fitted line, canopy against summer surface
+  temperature, species composition as a stacked bar, and planting cohorts with
+  a falling survival line.
+
+  Cross-reference figures from the prose. Footnotes must jump both ways. The
+  appendix states four limitations that genuinely affect interpretation,
+  including one that makes the headline finding stronger rather than weaker.
+  Say plainly on the page that the city and the data are invented.
+
+  Archival visual treatment: ivory ground, oldstyle serif with oldstyle
+  figures, small-caps labels, a working left margin carrying marginal notes and
+  a sticky contents list, hairline rules, real figure captions with sources.
+  Print stylesheet that drops the navigation and keeps figures whole. Light and
+  dark. No network, no libraries.
+customize:
+  - Replace the WARDS, CITY, SPECIES and COHORTS arrays with your own figures — every chart redraws.
+  - Swap the deprivation index for whatever equity measure your jurisdiction publishes.
+  - Ask Claude to add a scenario model section with reader-adjustable assumptions.
+  - Delete the fiction disclaimer once the numbers are real ones.
+technical: false
+
+author: { name: zoltlabs, github: zoltlabs }
+license: MIT

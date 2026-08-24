@@ -1,0 +1,43 @@
+title: Lattice
+summary: A daily pentomino packing puzzle whose board is generated from the date, so
+  everyone gets the same one without a server.
+tier: source
+
+use_case: [play]
+style: game
+topics: [puzzle, geometry, daily]
+techniques: [localstorage, keyboard-nav]
+design: swiss
+
+source: artifact.html
+
+prompt: |
+  A daily pentomino packing puzzle as one self-contained HTML file.
+
+  Fit six pentominoes into a 6×5 board. The trick: generate the board by
+  *tiling* it — fill the rectangle with pentominoes using seeded backtracking,
+  then hand the player the pieces that were used. Solvability is guaranteed by
+  construction rather than tested afterwards. Seed the generator from the date
+  so every player gets the same board with no server involved.
+
+  Select a piece, preview it on the board as a ghost, place it, and click a
+  placed piece to lift it again. Full keyboard parity: number keys pick, arrows
+  move, R rotates, F flips, Enter places, Backspace takes back. Keep streaks and
+  solve times in local storage, and produce a spoiler-free share string that
+  encodes the piece count and time but nothing about the solution. Include a
+  practice board so the page still has something to do after the daily is solved.
+
+  Swiss grid treatment: white ground, one grotesque doing all the work, a strict
+  12-column layout, hairline rules, no radius and no shadows, hierarchy from
+  size and position only, and exactly one signal red for the active piece and
+  invalid placements. Pieces are distinguished by tint, not hue. Light and dark.
+  No network, no libraries.
+customize:
+  - Change COLS and ROWS for a bigger board — the generator adapts, but keep the area a multiple of five.
+  - Swap the seed string in start() to run weekly boards instead of daily.
+  - Ask Claude to add a hint that reveals one piece's true position.
+  - Ask Claude to add a timed ladder mode with progressively larger boards.
+technical: false
+
+author: { name: zoltlabs, github: zoltlabs }
+license: MIT
