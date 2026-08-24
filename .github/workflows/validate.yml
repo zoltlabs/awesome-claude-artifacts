@@ -1,0 +1,26 @@
+name: validate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Validate entries against taxonomy.yaml
+        run: npm run validate
+      - name: Build index
+        run: npm run index
+      - name: Fail if the generated index or README is stale
+        run: git diff --exit-code -- README.md

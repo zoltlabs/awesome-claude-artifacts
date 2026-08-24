@@ -1,0 +1,71 @@
+# Closed vocabularies for the artifact gallery.
+# Changing this file is a dedicated PR with a rationale (see spec §6, Rule 5).
+version: 0.1
+
+use_case:
+  teaching:       { label: "Teaching & learning", blurb: "Built to make someone understand something." }
+  marketing:      { label: "Marketing",           blurb: "Audience-facing collateral: attention, positioning, capture." }
+  sales:          { label: "Sales",               blurb: "Used inside a deal cycle, one-to-one with a named prospect." }
+  consulting:     { label: "Consulting",          blurb: "Client deliverables, frameworks, and assessments." }
+  product-design: { label: "Product & design",    blurb: "Specifying and shaping software before it is built." }
+  data-research:  { label: "Data & research",     blurb: "Making a dataset or body of evidence legible to someone else." }
+  internal-ops:   { label: "Internal ops & HR",   blurb: "Running the inside of an organisation: process, policy, people." }
+  personal:       { label: "Personal",            blurb: "One person's own life admin, no organisation behind it." }
+  creative:       { label: "Creative work",       blurb: "Writing, art, and the presentation of creative work." }
+  play:           { label: "Play",                blurb: "Made for enjoyment. No downstream deliverable." }
+
+family:
+  present:   { label: "Present",   shape: "You read it, front to back." }
+  explain:   { label: "Explain",   shape: "You poke it to understand something." }
+  calculate: { label: "Calculate", shape: "Inputs go in, an answer comes out." }
+  explore:   { label: "Explore",   shape: "Data in, many views out." }
+  engage:    { label: "Engage",    shape: "A loop, a score, or state that persists." }
+
+# `family` on an entry is DERIVED from `style` — never authored.
+style:
+  deck:          { family: present,   blurb: "Sequential slides, one idea per screen." }
+  one-pager:     { family: present,   blurb: "A single persuasive scroll ending in an ask." }
+  report:        { family: present,   blurb: "Long-form reading with sections, figures, references." }
+  diagram:       { family: explain,   blurb: "Spatial or structural picture; interaction reveals." }
+  timeline:      { family: explain,   blurb: "Temporal sequence you scrub, zoom, or filter." }
+  simulator:     { family: explain,   blurb: "Parameters drive a running model." }
+  calculator:    { family: calculate, blurb: "Inputs resolve live to a number or small result set." }
+  comparator:    { family: calculate, blurb: "Options side by side against shared criteria." }
+  wizard:        { family: calculate, blurb: "Guided multi-step form ending in a tailored output." }
+  dashboard:     { family: explore,   blurb: "Fixed dataset, several coordinated views." }
+  data-explorer: { family: explore,   blurb: "User brings their own data; artifact makes it legible." }
+  quiz:          { family: engage,    blurb: "Questions resolve to a score or result type." }
+  game:          { family: engage,    blurb: "Rules, a win condition, a reason to replay." }
+  generator:     { family: engage,    blurb: "Configure inputs, produce an output to take away." }
+  tracker:       { family: engage,    blurb: "Add entries over time; state survives a reload." }
+
+# Secondary navigation only. Not surfaced in the main filter bar.
+techniques:
+  - canvas
+  - webgl
+  - svg
+  - web-audio
+  - charts
+  - physics-sim
+  - drag-drop
+  - file-upload
+  - localstorage
+  - keyboard-nav
+  - print-ready
+  - no-js
+  - single-file-react
+
+tier:
+  source: "Full artifact source committed. CI renders the thumbnail. Remixable."
+  linked: "claude.ai share URL plus a submitter screenshot, normalised by CI."
+
+license_allowed: [MIT, Apache-2.0, BSD-3-Clause, CC0-1.0, CC-BY-4.0, Unlicense]
+
+# Declined as saturated — see spec §8, "Distinct".
+saturated:
+  - pomodoro timer
+  - to-do list
+  - tip splitter
+  - unit converter
+  - basic calculator
+  - weather widget

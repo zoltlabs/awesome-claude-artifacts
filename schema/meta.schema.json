@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://awesomeclaudeartifacts.com/schema/meta.schema.json",
+  "title": "Artifact entry metadata",
+  "description": "Schema for artifacts/<slug>/meta.yaml. Closed vocabularies live in taxonomy.yaml and are enforced by scripts/validate.mjs, not here.",
+  "type": "object",
+  "required": ["title", "summary", "tier", "use_case", "style", "author", "license"],
+  "additionalProperties": false,
+  "properties": {
+    "title": { "type": "string", "minLength": 3, "maxLength": 80 },
+    "summary": {
+      "type": "string", "maxLength": 200,
+      "description": "One sentence, present tense: what it does, for whom."
+    },
+    "tier": { "enum": ["source", "linked"] },
+
+    "use_case": {
+      "type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true,
+      "items": { "type": "string" },
+      "description": "First entry is primary. Jobs, never industries — industry goes in topics."
+    },
+    "style": {
+      "type": "string",
+      "description": "Exactly one. Family is derived from this and must not be authored."
+    },
+    "topics": { "type": "array", "maxItems": 4, "items": { "type": "string" } },
+    "techniques": { "type": "array", "items": { "type": "string" } },
+
+    "source": {
+      "type": "string", "pattern": "\\.html$",
+      "description": "Required when tier is source. Always a single .html file."
+    },
+    "claude_url": {
+      "type": "string", "format": "uri", "pattern": "^https://",
+      "description": "Required when tier is linked."
+    },
+    "thumb": { "type": "string", "default": "thumb.webp" },
+
+    "prompt": {
+      "type": "string",
+      "description": "The prompt that produced this artifact, verbatim. Strongly encouraged."
+    },
+    "customize": {
+      "type": "array", "maxItems": 5, "items": { "type": "string" },
+      "description": "The two or three things worth changing to make it yours."
+    },
+    "technical": {
+      "type": "boolean", "default": false,
+      "description": "Does remixing require reading code?"
+    },
+
+    "author": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "github": { "type": "string" },
+        "url": { "type": "string", "format": "uri" }
+      },
+      "additionalProperties": false
+    },
+    "license": { "type": "string", "description": "OSI identifier or CC0-1.0." },
+    "added": { "type": "string", "format": "date", "description": "Stamped by CI on merge." }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "tier": { "const": "source" } }, "required": ["tier"] },
+      "then": { "required": ["source"] }
+    },
+    {
+      "if": { "properties": { "tier": { "const": "linked" } }, "required": ["tier"] },
+      "then": { "required": ["claude_url"] }
+    }
+  ]
+}

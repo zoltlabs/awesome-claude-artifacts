@@ -1,0 +1,44 @@
+name: thumbnails
+
+# Renders missing thumbnails and commits them to the contributor's branch, so
+# submitters never need Playwright locally (spec §0, Thumbnails).
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+    paths:
+      - 'artifacts/**/*.html'
+      - 'artifacts/**/meta.yaml'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  shoot:
+    # Only for branches in this repo. Forks get a comment instead — pull_request_target
+    # runs with write access, so we never check out untrusted code here.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Render missing thumbnails
+        run: npm run shoot
+      - name: Commit
+        run: |
+          git config user.name  "artifact-bot"
+          git config user.email "bot@users.noreply.github.com"
+          if [[ -n "$(git status --porcelain 'artifacts/**/thumb.webp')" ]]; then
+            git add 'artifacts/**/thumb.webp'
+            git commit -m "chore: render thumbnails"
+            git push
+          else
+            echo "Nothing to render."
+          fi

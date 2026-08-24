@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Propose a taxonomy change
+    url: https://github.com/zoltlabs/awesome-claude-artifacts/blob/main/CONTRIBUTING.md#changing-the-vocabulary
+    about: New use_case, style, or technique terms go through their own PR against taxonomy.yaml.
+  - name: Rights holder / DMCA
+    url: https://github.com/zoltlabs/awesome-claude-artifacts/blob/main/CONTRIBUTING.md#provenance
+    about: Report an entry that infringes your rights. It is removed while the claim is reviewed.

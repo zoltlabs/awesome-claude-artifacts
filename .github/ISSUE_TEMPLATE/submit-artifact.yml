@@ -1,0 +1,110 @@
+name: Submit an artifact
+description: Suggest an artifact for the gallery. A maintainer turns this into a PR.
+title: "[artifact] "
+labels: ["submission"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for submitting. Read [the bar](../blob/main/CONTRIBUTING.md#the-bar) first —
+        it's five checks and it saves us both time.
+
+  - type: input
+    id: title
+    attributes:
+      label: Title
+      placeholder: Runway & Dilution Modeler
+    validations: { required: true }
+
+  - type: input
+    id: summary
+    attributes:
+      label: One-line summary
+      description: Present tense — what it does, for whom.
+      placeholder: Models how a seed round dilutes founder equity across follow-on rounds.
+    validations: { required: true }
+
+  - type: dropdown
+    id: style
+    attributes:
+      label: Style
+      description: Exactly one. Pick by what a person does in the first ten seconds.
+      options:
+        - "deck — sequential slides"
+        - "one-pager — a single persuasive scroll"
+        - "report — long-form reading"
+        - "diagram — spatial or structural picture"
+        - "timeline — temporal sequence"
+        - "simulator — parameters drive a running model"
+        - "calculator — inputs resolve live to a number"
+        - "comparator — options side by side"
+        - "wizard — guided multi-step form"
+        - "dashboard — fixed dataset, several views"
+        - "data-explorer — user brings their own data"
+        - "quiz — questions resolve to a score"
+        - "game — rules, a win condition, a replay"
+        - "generator — produces an output to take away"
+        - "tracker — entries over time, state persists"
+    validations: { required: true }
+
+  - type: dropdown
+    id: use_case
+    attributes:
+      label: Use case
+      description: The job, not the industry. Pick one or two — the first is primary.
+      multiple: true
+      options:
+        - teaching
+        - marketing
+        - sales
+        - consulting
+        - product-design
+        - data-research
+        - internal-ops
+        - personal
+        - creative
+        - play
+    validations: { required: true }
+
+  - type: textarea
+    id: prompt
+    attributes:
+      label: The prompt that made it
+      description: Verbatim if you have it. For most of our audience, the prompt is the deliverable.
+      render: text
+
+  - type: textarea
+    id: html
+    attributes:
+      label: The artifact
+      description: |
+        Paste the complete single `.html` file. It must run from a `file://` URL with the
+        wifi off — no CDN scripts, no `fetch`, no external images. If it's too large to
+        paste, link a gist instead.
+      render: html
+
+  - type: input
+    id: claude_url
+    attributes:
+      label: Claude share link (optional)
+      placeholder: https://claude.ai/public/artifacts/...
+
+  - type: input
+    id: license
+    attributes:
+      label: License
+      description: MIT, Apache-2.0, BSD-3-Clause, CC0-1.0, CC-BY-4.0, or Unlicense.
+      value: MIT
+    validations: { required: true }
+
+  - type: checkboxes
+    id: provenance
+    attributes:
+      label: Provenance
+      options:
+        - label: I made this artifact myself and can license it as stated.
+          required: true
+        - label: It contains no third-party logos, game clones, lyrics, or copyrighted images.
+          required: true
+        - label: It works offline, in light and dark, and at 390px wide.
+          required: true

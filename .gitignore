@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+*.log
+
+# build output
+site/dist/
+site/public/index.json
+
+# generated at deploy time, never committed (see spec §0, Thumbnails)
+**/thumb.dark.webp
+**/thumb.mobile.webp
+**/thumb.full.png

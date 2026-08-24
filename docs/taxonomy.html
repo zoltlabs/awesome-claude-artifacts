@@ -1,0 +1,479 @@
+<title>Artifact Taxonomy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Archivo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --paper:#F1F3F0; --surface:#FAFBF9; --sunk:#E7EAE5;
+  --ink:#151E1B; --ink-2:#3E4A46; --ink-3:#6C7975;
+  --rule:#D3D9D3; --rule-soft:#E2E7E1;
+  --accent:#1F4A40; --accent-live:#2E7F86;
+  --fam-present:#41579B; --fam-explain:#2A757C;
+  --fam-calculate:#63762E; --fam-explore:#A66E1F; --fam-engage:#9C4048;
+  --wash:10%;
+  --shadow:0 1px 2px rgba(21,30,27,.06), 0 8px 24px -12px rgba(21,30,27,.14);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#101614; --surface:#18211E; --sunk:#0B100E;
+    --ink:#E3EAE6; --ink-2:#A9B6B1; --ink-3:#76837E;
+    --rule:#2A3733; --rule-soft:#212C29;
+    --accent:#8FC5B4; --accent-live:#6FC4C9;
+    --fam-present:#8D9EE0; --fam-explain:#5FBAC0;
+    --fam-calculate:#A9BE63; --fam-explore:#E0A85A; --fam-engage:#E08A90;
+    --wash:16%;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101614; --surface:#18211E; --sunk:#0B100E;
+  --ink:#E3EAE6; --ink-2:#A9B6B1; --ink-3:#76837E;
+  --rule:#2A3733; --rule-soft:#212C29;
+  --accent:#8FC5B4; --accent-live:#6FC4C9;
+  --fam-present:#8D9EE0; --fam-explain:#5FBAC0;
+  --fam-calculate:#A9BE63; --fam-explore:#E0A85A; --fam-engage:#E08A90;
+  --wash:16%;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -14px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:Archivo, "Helvetica Neue", Arial, sans-serif;
+  font-size:16.5px; line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px; margin:0 auto; padding:0 28px 120px}
+.prose{max-width:68ch}
+
+h1,h2,h3,h4{font-family:Spectral, Georgia, serif; text-wrap:balance; margin:0}
+a{color:var(--accent-live); text-underline-offset:3px}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent-live); outline-offset:3px; border-radius:2px}
+code,.mono{font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace}
+p code, li code, td code{
+  font-size:.86em; background:var(--sunk); border:1px solid var(--rule-soft);
+  padding:.08em .36em; border-radius:3px; color:var(--ink);
+}
+
+/* ---------- masthead ---------- */
+.masthead{padding:72px 0 40px; border-bottom:1px solid var(--ink); }
+.eyebrow{
+  font-family:"IBM Plex Mono", monospace; font-size:11.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink-3); margin:0 0 22px;
+  display:flex; gap:14px; flex-wrap:wrap; align-items:baseline;
+}
+.eyebrow b{color:var(--accent); font-weight:500}
+h1{font-size:clamp(42px,6.4vw,74px); line-height:1.02; font-weight:600; letter-spacing:-.02em}
+h1 em{font-style:italic; font-weight:400; color:var(--ink-2)}
+.standfirst{
+  font-family:Spectral, Georgia, serif; font-size:clamp(18px,2.2vw,21px);
+  line-height:1.55; color:var(--ink-2); max-width:60ch; margin:24px 0 0;
+}
+.facts{
+  display:flex; flex-wrap:wrap; gap:0; margin:38px 0 0;
+  border-top:1px solid var(--rule); font-family:"IBM Plex Mono", monospace;
+}
+.fact{padding:14px 26px 14px 0; margin-right:26px; border-right:1px solid var(--rule); }
+.fact:last-child{border-right:0}
+.fact dt{font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3)}
+.fact dd{margin:5px 0 0; font-size:14.5px; color:var(--ink); font-variant-numeric:tabular-nums}
+
+/* ---------- sections ---------- */
+section{padding:64px 0 0}
+.sec-head{display:flex; gap:20px; align-items:baseline; border-bottom:1px solid var(--rule); padding-bottom:12px; margin-bottom:30px}
+.sec-num{
+  font-family:"IBM Plex Mono", monospace; font-size:13px; color:var(--accent);
+  font-weight:500; flex:0 0 auto; padding-top:4px;
+}
+.sec-head h2{font-size:clamp(26px,3.4vw,34px); font-weight:600; letter-spacing:-.015em; flex:1}
+.sec-head .aside{font-family:"IBM Plex Mono", monospace; font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); text-align:right}
+h3{font-size:20px; font-weight:600; margin:0}
+.lede{color:var(--ink-2); margin:0 0 26px}
+
+/* ---------- axis diagram ---------- */
+.axes{display:grid; grid-template-columns:1fr 1fr; gap:18px; margin:30px 0 8px}
+.axis{
+  background:var(--surface); border:1px solid var(--rule); border-radius:4px;
+  padding:22px 24px 24px; box-shadow:var(--shadow);
+}
+.axis .k{font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-3)}
+.axis h3{margin:9px 0 8px; font-size:23px}
+.axis p{margin:0; color:var(--ink-2); font-size:15px}
+.axis .q{
+  margin-top:16px; padding-top:14px; border-top:1px dashed var(--rule);
+  font-family:Spectral,Georgia,serif; font-style:italic; font-size:15.5px; color:var(--ink);
+}
+
+/* ---------- term list ---------- */
+.terms{display:grid; grid-template-columns:repeat(2,1fr); gap:1px; background:var(--rule-soft); border:1px solid var(--rule-soft); border-radius:4px; overflow:hidden}
+.term{background:var(--surface); padding:18px 20px 19px; display:flex; flex-direction:column; gap:6px}
+.term .code{font-family:"IBM Plex Mono",monospace; font-size:13px; font-weight:500; color:var(--accent)}
+.term .name{font-family:Spectral,Georgia,serif; font-size:18px; font-weight:600; line-height:1.25}
+.term p{margin:0; font-size:14.5px; color:var(--ink-2); line-height:1.5}
+.term .eg{font-size:13px; color:var(--ink-3); line-height:1.5}
+.term .eg b{font-family:"IBM Plex Mono",monospace; font-weight:500; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); display:block; margin-bottom:2px}
+
+/* ---------- families ---------- */
+.family{margin:0 0 34px; border-left:3px solid var(--fam); padding-left:22px}
+.family[data-f="present"]{--fam:var(--fam-present)}
+.family[data-f="explain"]{--fam:var(--fam-explain)}
+.family[data-f="calculate"]{--fam:var(--fam-calculate)}
+.family[data-f="explore"]{--fam:var(--fam-explore)}
+.family[data-f="engage"]{--fam:var(--fam-engage)}
+.family > header{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:4px}
+.family > header h3{color:var(--fam); font-size:22px}
+.family > header .code{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-3)}
+.family > header .shape{
+  font-family:Spectral,Georgia,serif; font-style:italic; color:var(--ink-2); font-size:15.5px;
+  margin-left:auto; text-align:right;
+}
+.styles{display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:16px; margin-top:16px}
+.style{background:var(--surface); border:1px solid var(--rule-soft); border-radius:4px; padding:15px 17px}
+.style .code{font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500; color:var(--fam)}
+.style h4{font-size:16px; margin:4px 0 6px; font-weight:600}
+.style p{margin:0; font-size:14px; color:var(--ink-2); line-height:1.5}
+.style .vs{
+  margin-top:10px; padding-top:9px; border-top:1px dashed var(--rule-soft);
+  font-size:12.5px; color:var(--ink-3); line-height:1.45;
+}
+.style .vs b{color:var(--ink-2); font-weight:500}
+
+/* ---------- matrix ---------- */
+.scroller{overflow-x:auto; border:1px solid var(--rule); border-radius:4px; background:var(--surface)}
+table.matrix{border-collapse:collapse; width:100%; min-width:660px; font-variant-numeric:tabular-nums}
+table.matrix th, table.matrix td{padding:0; text-align:center}
+table.matrix thead th{
+  font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+  font-weight:500; padding:14px 8px; border-bottom:1px solid var(--rule); color:var(--ink-3);
+}
+table.matrix thead th[data-f="present"]{color:var(--fam-present)}
+table.matrix thead th[data-f="explain"]{color:var(--fam-explain)}
+table.matrix thead th[data-f="calculate"]{color:var(--fam-calculate)}
+table.matrix thead th[data-f="explore"]{color:var(--fam-explore)}
+table.matrix thead th[data-f="engage"]{color:var(--fam-engage)}
+table.matrix tbody th{
+  text-align:left; font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:500;
+  padding:0 16px; color:var(--ink); border-right:1px solid var(--rule); white-space:nowrap;
+}
+table.matrix tbody td{
+  height:44px; border-right:1px solid var(--rule-soft); border-bottom:1px solid var(--rule-soft);
+  font-size:14px; font-weight:500; color:var(--ink);
+}
+table.matrix tbody tr:last-child td, table.matrix tbody tr:last-child th{border-bottom:0}
+td[data-f="present"]{background:color-mix(in oklab, var(--fam-present) var(--w,0%), transparent)}
+td[data-f="explain"]{background:color-mix(in oklab, var(--fam-explain) var(--w,0%), transparent)}
+td[data-f="calculate"]{background:color-mix(in oklab, var(--fam-calculate) var(--w,0%), transparent)}
+td[data-f="explore"]{background:color-mix(in oklab, var(--fam-explore) var(--w,0%), transparent)}
+td[data-f="engage"]{background:color-mix(in oklab, var(--fam-engage) var(--w,0%), transparent)}
+td.n1{--w:calc(var(--wash) * .7)} td.n2{--w:calc(var(--wash) * 1.3)}
+td.n3{--w:calc(var(--wash) * 2)} td.n4{--w:calc(var(--wash) * 2.8)}
+td.zero{color:var(--ink-3); font-weight:400}
+table.matrix tfoot td, table.matrix tfoot th{
+  border-top:1px solid var(--rule); padding:11px 8px;
+  font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--ink-2);
+}
+table.matrix tfoot th{text-align:left; padding-left:16px; color:var(--ink-3); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase}
+.legend{display:flex; gap:22px; flex-wrap:wrap; margin-top:14px; font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-3)}
+
+/* ---------- code block ---------- */
+pre{
+  background:var(--sunk); border:1px solid var(--rule-soft); border-radius:4px;
+  padding:20px 22px; overflow-x:auto; margin:0; font-size:13.5px; line-height:1.72;
+}
+pre code{font-family:"IBM Plex Mono",monospace; color:var(--ink)}
+.c{color:var(--ink-3)}
+.key{color:var(--accent-live)}
+.req{color:var(--fam-engage); font-weight:500}
+
+/* ---------- rules list ---------- */
+.rules{list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0}
+.rules li{display:flex; gap:18px; padding:16px 0; border-bottom:1px solid var(--rule-soft)}
+.rules li:first-child{border-top:1px solid var(--rule-soft)}
+.rules .tag{
+  flex:0 0 108px; font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-3); padding-top:4px;
+}
+.rules .body{flex:1; font-size:15px}
+.rules .body strong{font-weight:600}
+.rules .body p{margin:5px 0 0; color:var(--ink-2); font-size:14.5px}
+
+/* ---------- gates ---------- */
+.gates{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px}
+.gate{border:1px solid var(--rule); border-radius:4px; padding:16px 18px; background:var(--surface)}
+.gate .code{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--accent); font-weight:500}
+.gate p{margin:7px 0 0; font-size:14px; color:var(--ink-2); line-height:1.5}
+
+/* ---------- phases ---------- */
+.phases{display:flex; flex-direction:column; gap:0; counter-reset:ph}
+.phase{display:flex; gap:22px; padding:20px 0; border-bottom:1px solid var(--rule-soft)}
+.phase:first-child{border-top:1px solid var(--rule-soft)}
+.phase .n{
+  flex:0 0 62px; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--accent); padding-top:4px; font-weight:500;
+}
+.phase h3{font-size:17px; margin-bottom:5px}
+.phase p{margin:0; color:var(--ink-2); font-size:14.5px}
+
+.note{
+  border-left:3px solid var(--accent); background:var(--surface); padding:16px 20px;
+  margin:26px 0 0; font-size:14.5px; color:var(--ink-2); border-radius:0 4px 4px 0;
+}
+.note b{color:var(--ink); font-weight:600}
+
+footer{margin-top:72px; padding-top:24px; border-top:1px solid var(--ink); font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-3); letter-spacing:.06em}
+
+@media (max-width:720px){
+  .axes{grid-template-columns:1fr}
+  .terms{grid-template-columns:1fr}
+  .rules li{flex-direction:column; gap:4px}
+  .rules .tag{flex:none}
+  .family > header .shape{margin-left:0; text-align:left; width:100%}
+}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <p class="eyebrow"><b>awesome-claude-artifacts</b> <span>Specification v0.2</span> <span>MIT · open source</span></p>
+  <h1>Artifact <em>Taxonomy</em></h1>
+  <p class="standfirst">How every entry in the gallery is classified, validated, and found. Two closed vocabularies — what the artifact is <em>for</em>, and what <em>shape</em> it takes — plus the schema and CI gates that keep them honest.</p>
+  <dl class="facts">
+    <div class="fact"><dt>Use cases</dt><dd>10</dd></div>
+    <div class="fact"><dt>Styles</dt><dd>15 in 5 families</dd></div>
+    <div class="fact"><dt>Seed target</dt><dd>76 entries</dd></div>
+    <div class="fact"><dt>Format</dt><dd>Single-file HTML</dd></div>
+    <div class="fact"><dt>Posture</dt><dd>Showcase</dd></div>
+  </dl>
+</header>
+
+<section id="decisions">
+  <div class="sec-head"><span class="sec-num">§0</span><h2>Decisions of record</h2><span class="aside">Settled · reopen by PR</span></div>
+  <div class="prose"><p class="lede">These are closed. Anything below can change, but it changes deliberately, with a rationale — not inside a submission.</p></div>
+  <ul class="rules">
+    <li><span class="tag">Format</span><div class="body"><strong>Single-file HTML only. No JSX, no build step.</strong><p>One self-contained <code>.html</code> file per entry. This makes the CI lint a single-file scan, makes “copy the source” literal, and makes the render a <code>file://</code> load with nothing to compile. React via JSX is out of scope for now; an artifact that ships its own runtime inline is still just one HTML file and is fine.</p></div></li>
+    <li><span class="tag">Posture</span><div class="body"><strong>Showcase, not templates.</strong><p>Entries stay specific and impressive rather than genericized with placeholder content. Genericizing doubles the cost per entry for a payoff that cannot be validated before launch. The remix path is carried by <code>prompt</code> and <code>customize</code> instead. Shapes that get requested repeatedly get promoted into skills or prompt packs later — that is a separate artifact, not a change to this one.</p></div></li>
+    <li><span class="tag">Naming</span><div class="body"><strong>Repo <code>awesome-claude-artifacts</code>, site <code>awesomeclaudeartifacts.com</code>.</strong><p>“Claude” is used descriptively, to name what the collection is about. Every surface carries an independence disclaimer, and no Anthropic logo, wordmark, or brand color appears anywhere on the site.</p></div></li>
+    <li><span class="tag">Thumbnails</span><div class="body"><strong>Rendered by CI, committed by a bot.</strong><p>An Action renders <code>thumb.webp</code> and pushes it to the contributor's branch, so submitters never install Playwright. One committed render per entry — light theme, 800px — with dark, mobile, and full-size generated at deploy time and never committed. That keeps the repo near 5&nbsp;MB at launch instead of 25&nbsp;MB, while the README can still embed real thumbnails.</p></div></li>
+    <li><span class="tag">Licensing</span><div class="body"><strong>Tooling is MIT; every entry carries its own license.</strong><p>Contributors license only work they made themselves. A human reviews every entry for provenance and for embedded third-party content — logos, game clones, lyrics — which is the most likely takedown vector and is not automatable. A DMCA contact is published.</p></div></li>
+    <li><span class="tag">Deferred</span><div class="body"><strong>No monetization, no accounts, no comments.</strong><p>Instrumentation only: which prompts get copied, which matrix cells get filtered, and a one-question “what are you making?” survey on detail pages. The gallery's job in its first months is to earn attention and generate the data that would name a business later.</p></div></li>
+  </ul>
+</section>
+
+<section id="model">
+  <div class="sec-head"><span class="sec-num">§1</span><h2>The model</h2><span class="aside">Two axes</span></div>
+  <div class="prose">
+    <p class="lede">Entries are classified on two independent axes. They answer different questions, arrive from different directions, and neither one substitutes for the other.</p>
+  </div>
+  <div class="axes">
+    <div class="axis">
+      <p class="k">Axis 1 — who and why</p>
+      <h3>Use case</h3>
+      <p>The job the artifact does and the person doing it. This is how people arrive: they know their situation before they know what they want built.</p>
+      <p class="q">“I'm a consultant preparing a client leave-behind.”</p>
+    </div>
+    <div class="axis">
+      <p class="k">Axis 2 — what shape</p>
+      <h3>Style</h3>
+      <p>The interaction shape, independent of subject. This is how people find something to steal: the closest working example is usually from a different domain entirely.</p>
+      <p class="q">“I need a multi-step form that produces a tailored result.”</p>
+    </div>
+  </div>
+  <div class="note">
+    <b>Why style is the primary axis.</b> A trip-budget calculator and a SaaS ROI calculator are the same artifact with different labels. Someone who needs a comparison table learns more from an excellent one built for a domain they've never worked in than from a mediocre one in their own. Use case narrows; style is what actually transfers.
+  </div>
+</section>
+
+<section id="usecase">
+  <div class="sec-head"><span class="sec-num">§2</span><h2>Use case vocabulary</h2><span class="aside">Closed · 10 terms<br>1 required, 2 max</span></div>
+  <div class="prose"><p class="lede">These are <em>jobs</em>, not industries. A healthcare ROI calculator is <code>sales</code>, with <code>healthcare</code> as a topic tag. Industry never becomes a use case — that is what <code>topics</code> is for.</p></div>
+  <div class="terms">
+    <div class="term"><span class="code">teaching</span><span class="name">Teaching &amp; learning</span><p>Built to make someone understand something, in a classroom, a course, or self-study.</p><p class="eg"><b>Examples</b>Fraction manipulative · spaced-repetition drill · lab-safety walkthrough</p></div>
+    <div class="term"><span class="code">marketing</span><span class="name">Marketing</span><p>Audience-facing collateral: attention, positioning, capture.</p><p class="eg"><b>Examples</b>Launch landing page · campaign microsite · lead-gen quiz</p></div>
+    <div class="term"><span class="code">sales</span><span class="name">Sales</span><p>Used inside a deal cycle, usually one-to-one with a named prospect.</p><p class="eg"><b>Examples</b>ROI calculator · product configurator · plan comparison</p></div>
+    <div class="term"><span class="code">consulting</span><span class="name">Consulting</span><p>Client deliverables, frameworks, and assessments that replace a 40-page PDF.</p><p class="eg"><b>Examples</b>Maturity model · readiness scorecard · findings report</p></div>
+    <div class="term"><span class="code">product-design</span><span class="name">Product &amp; design</span><p>The work of specifying and shaping software before it is built.</p><p class="eg"><b>Examples</b>Clickable prototype · journey map · now/next/later board</p></div>
+    <div class="term"><span class="code">data-research</span><span class="name">Data &amp; research</span><p>Making a dataset or a body of evidence legible to someone else.</p><p class="eg"><b>Examples</b>CSV explorer · survey dashboard · literature map</p></div>
+    <div class="term"><span class="code">internal-ops</span><span class="name">Internal ops &amp; HR</span><p>Running the inside of an organisation: process, policy, people.</p><p class="eg"><b>Examples</b>Org chart · benefits explainer · incident runbook</p></div>
+    <div class="term"><span class="code">personal</span><span class="name">Personal</span><p>One person's own life admin, with no organisation behind it.</p><p class="eg"><b>Examples</b>Trip planner · budget tracker · habit log</p></div>
+    <div class="term"><span class="code">creative</span><span class="name">Creative work</span><p>Writing, art, and the presentation of a body of creative work.</p><p class="eg"><b>Examples</b>Story bible · interactive fiction · portfolio</p></div>
+    <div class="term"><span class="code">play</span><span class="name">Play</span><p>Made for enjoyment. No downstream deliverable, and that is fine.</p><p class="eg"><b>Examples</b>Word puzzle · generative art toy · physics sandbox</p></div>
+  </div>
+</section>
+
+<section id="style">
+  <div class="sec-head"><span class="sec-num">§3</span><h2>Style vocabulary</h2><span class="aside">Closed · 15 terms<br>Exactly 1</span></div>
+  <div class="prose"><p class="lede">Fifteen styles, grouped into five families by <em>how you interact</em> rather than what they look like. Families are the filter chips; styles are the refinement. <code>family</code> is derived from <code>style</code> and never authored by hand.</p></div>
+
+  <div class="family" data-f="present">
+    <header><h3>Present</h3><span class="code">present</span><span class="shape">You read it, front to back.</span></header>
+    <div class="styles">
+      <div class="style"><span class="code">deck</span><h4>Deck</h4><p>Sequential slides with keyboard or arrow navigation. One idea per screen.</p><p class="vs"><b>Not a report:</b> if scrolling beats stepping, it's a report.</p></div>
+      <div class="style"><span class="code">one-pager</span><h4>One-pager</h4><p>A single scroll with a persuasive rhythm, ending in an ask.</p><p class="vs"><b>Not a report:</b> a one-pager sells; a report informs.</p></div>
+      <div class="style"><span class="code">report</span><h4>Report</h4><p>Long-form reading with real structure — sections, figures, references.</p><p class="vs"><b>Not a dashboard:</b> the argument is authored, not queried.</p></div>
+    </div>
+  </div>
+
+  <div class="family" data-f="explain">
+    <header><h3>Explain</h3><span class="code">explain</span><span class="shape">You poke it to understand something.</span></header>
+    <div class="styles">
+      <div class="style"><span class="code">diagram</span><h4>Diagram</h4><p>A spatial or structural picture. Interaction reveals, annotates, or rearranges.</p><p class="vs"><b>Not a dashboard:</b> the layout carries meaning, not the numbers.</p></div>
+      <div class="style"><span class="code">timeline</span><h4>Timeline</h4><p>A temporal sequence you scrub, zoom, or filter.</p><p class="vs"><b>Not a tracker:</b> the timeline is authored and read-only.</p></div>
+      <div class="style"><span class="code">simulator</span><h4>Simulator</h4><p>Parameters drive a running model. You learn by changing them and watching.</p><p class="vs"><b>Not a calculator:</b> a simulator has state that evolves; a calculator returns.</p></div>
+    </div>
+  </div>
+
+  <div class="family" data-f="calculate">
+    <header><h3>Calculate</h3><span class="code">calculate</span><span class="shape">Inputs go in, an answer comes out.</span></header>
+    <div class="styles">
+      <div class="style"><span class="code">calculator</span><h4>Calculator</h4><p>Inputs resolve to a number or a small result set, updating live.</p><p class="vs"><b>Not a wizard:</b> everything is on one screen at once.</p></div>
+      <div class="style"><span class="code">comparator</span><h4>Comparator</h4><p>Options side by side against shared criteria, sortable or weightable.</p><p class="vs"><b>Not a dashboard:</b> the rows are choices, not observations.</p></div>
+      <div class="style"><span class="code">wizard</span><h4>Wizard</h4><p>A guided multi-step form that ends in a tailored output or recommendation.</p><p class="vs"><b>Not a quiz:</b> a wizard has no right answers, only a result.</p></div>
+    </div>
+  </div>
+
+  <div class="family" data-f="explore">
+    <header><h3>Explore</h3><span class="code">explore</span><span class="shape">Data in, many views out.</span></header>
+    <div class="styles">
+      <div class="style"><span class="code">dashboard</span><h4>Dashboard</h4><p>A fixed dataset shown through several coordinated views and filters.</p><p class="vs"><b>Not a data-explorer:</b> the data ships with the artifact.</p></div>
+      <div class="style"><span class="code">data-explorer</span><h4>Data explorer</h4><p>The user brings their own data — paste or upload — and the artifact makes it legible.</p><p class="vs"><b>Not a generator:</b> the output is a view, not a file to take away.</p></div>
+    </div>
+  </div>
+
+  <div class="family" data-f="engage">
+    <header><h3>Engage</h3><span class="code">engage</span><span class="shape">A loop, a score, or state that persists.</span></header>
+    <div class="styles">
+      <div class="style"><span class="code">quiz</span><h4>Quiz</h4><p>Questions resolve to a score or a result type.</p><p class="vs"><b>Not a game:</b> a quiz ends; a game loops.</p></div>
+      <div class="style"><span class="code">game</span><h4>Game</h4><p>Rules, a win or scoring condition, and a reason to play again.</p><p class="vs"><b>Not a simulator:</b> a game can be lost.</p></div>
+      <div class="style"><span class="code">generator</span><h4>Generator</h4><p>Configure inputs, produce an output to take away — an image, text, a file.</p><p class="vs"><b>Not a wizard:</b> the artifact makes a thing, not a recommendation.</p></div>
+      <div class="style"><span class="code">tracker</span><h4>Tracker</h4><p>You add entries over time and state survives a reload.</p><p class="vs"><b>The only style that requires persistence.</b> Flag it in <code>techniques</code>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="matrix">
+  <div class="sec-head"><span class="sec-num">§4</span><h2>Coverage matrix</h2><span class="aside">Seed plan · 76 entries</span></div>
+  <div class="prose"><p class="lede">The matrix is navigation, not just bookkeeping. Every cell is a real query — “consulting, calculate” — and every thin cell is a gap you can hand a contributor. Numbers below are launch targets, not counts: nothing has been built yet.</p></div>
+  <div class="scroller">
+    <table class="matrix">
+      <thead><tr><th></th>
+        <th data-f="present">Present</th><th data-f="explain">Explain</th><th data-f="calculate">Calculate</th><th data-f="explore">Explore</th><th data-f="engage">Engage</th><th>Row</th>
+      </tr></thead>
+      <tbody>
+        <tr><th>teaching</th><td data-f="present" class="n2">2</td><td data-f="explain" class="n4">4</td><td data-f="calculate" class="n1">1</td><td data-f="explore" class="n1">1</td><td data-f="engage" class="n3">3</td><td>11</td></tr>
+        <tr><th>marketing</th><td data-f="present" class="n3">3</td><td data-f="explain" class="n1">1</td><td data-f="calculate" class="n1">1</td><td data-f="explore" class="n1">1</td><td data-f="engage" class="n2">2</td><td>8</td></tr>
+        <tr><th>sales</th><td data-f="present" class="n2">2</td><td data-f="explain" class="n1">1</td><td data-f="calculate" class="n3">3</td><td data-f="explore" class="n1">1</td><td data-f="engage" class="n1">1</td><td>8</td></tr>
+        <tr><th>consulting</th><td data-f="present" class="n2">2</td><td data-f="explain" class="n1">1</td><td data-f="calculate" class="n3">3</td><td data-f="explore" class="n2">2</td><td data-f="engage" class="n1">1</td><td>9</td></tr>
+        <tr><th>product-design</th><td data-f="present" class="n2">2</td><td data-f="explain" class="n2">2</td><td data-f="calculate" class="n1">1</td><td data-f="explore" class="n1">1</td><td data-f="engage" class="n1">1</td><td>7</td></tr>
+        <tr><th>data-research</th><td data-f="present" class="n1">1</td><td data-f="explain" class="n1">1</td><td data-f="calculate" class="n1">1</td><td data-f="explore" class="n3">3</td><td data-f="engage" class="n1">1</td><td>7</td></tr>
+        <tr><th>internal-ops</th><td data-f="present" class="n2">2</td><td data-f="explain" class="n1">1</td><td data-f="calculate" class="n1">1</td><td data-f="explore" class="n1">1</td><td data-f="engage" class="n2">2</td><td>7</td></tr>
+        <tr><th>personal</th><td data-f="present" class="n1">1</td><td data-f="explain" class="n1">1</td><td data-f="calculate" class="n2">2</td><td data-f="explore" class="n1">1</td><td data-f="engage" class="n3">3</td><td>8</td></tr>
+        <tr><th>creative</th><td data-f="present" class="n1">1</td><td data-f="explain" class="n1">1</td><td class="zero">—</td><td data-f="explore" class="n1">1</td><td data-f="engage" class="n3">3</td><td>6</td></tr>
+        <tr><th>play</th><td class="zero">—</td><td data-f="explain" class="n1">1</td><td class="zero">—</td><td class="zero">—</td><td data-f="engage" class="n4">4</td><td>5</td></tr>
+      </tbody>
+      <tfoot><tr><th>Column</th><td>16</td><td>14</td><td>13</td><td>12</td><td>21</td><td>76</td></tr></tfoot>
+    </table>
+  </div>
+  <div class="legend">
+    <span>Shading — density of the launch target</span>
+    <span>— &nbsp;Deliberately empty at launch, still open to submissions</span>
+  </div>
+  <div class="note">
+    <b>Seed before you announce.</b> A gallery with eight entries looks abandoned, and a filter that returns nothing teaches people the site is broken. Fill the matrix first — one entry per targeted cell — so no combination a visitor tries on day one comes back empty.
+  </div>
+</section>
+
+<section id="schema">
+  <div class="sec-head"><span class="sec-num">§5</span><h2>Entry schema</h2><span class="aside">artifacts/&lt;slug&gt;/meta.yaml</span></div>
+  <div class="prose"><p class="lede">One directory per entry. Required fields are marked; everything else is optional but improves ranking and search.</p></div>
+  <pre><code><span class="c"># ── identity ─────────────────────────────────────────</span>
+<span class="key">title</span>:        Runway &amp; Dilution Modeler        <span class="req"># required</span>
+<span class="key">summary</span>:      One sentence, present tense,      <span class="req"># required</span>
+               what it does for whom.
+<span class="key">tier</span>:         source                           <span class="req"># required · source | linked</span>
+
+<span class="c"># ── classification (§2, §3) ──────────────────────────</span>
+<span class="key">use_case</span>:     [consulting, sales]              <span class="req"># required · 1–2, first is primary</span>
+<span class="key">style</span>:        calculator                       <span class="req"># required · exactly 1, closed vocab</span>
+<span class="key">topics</span>:       [finance, startups]              <span class="c"># 0–4 · curated open vocab</span>
+<span class="key">techniques</span>:   [charts, localstorage]           <span class="c"># closed vocab · secondary nav only</span>
+
+<span class="c"># ── the thing itself ─────────────────────────────────</span>
+<span class="key">source</span>:       artifact.html                    <span class="c"># required when tier: source · always .html</span>
+<span class="key">claude_url</span>:   https://claude.ai/public/...     <span class="c"># required when tier: linked</span>
+<span class="key">thumb</span>:        thumb.webp                       <span class="c"># CI writes this for tier: source</span>
+
+<span class="c"># ── the remix path — the actual product ──────────────</span>
+<span class="key">prompt</span>: |                                     <span class="req"># strongly encouraged</span>
+  The prompt that produced this artifact, verbatim.
+<span class="key">customize</span>:                                     <span class="c"># the three things worth changing</span>
+  - Swap the funding rounds in `ROUNDS` for your own.
+  - Ask Claude to add a secondary-sale scenario.
+  - Replace the currency formatter for non-USD.
+<span class="key">technical</span>:    false                            <span class="c"># does remixing require reading code?</span>
+
+<span class="c"># ── provenance ───────────────────────────────────────</span>
+<span class="key">author</span>:       { name: ..., github: ... }       <span class="req"># required</span>
+<span class="key">license</span>:      MIT                              <span class="req"># required · OSI id or CC0</span>
+<span class="key">added</span>:        2026-08-24                       <span class="c"># CI stamps on merge</span></code></pre>
+  <div class="note">
+    <b><code>prompt</code> is the hero field, not a footnote.</b> Most of the audience — marketers, teachers, consultants — will never edit the HTML. For them the prompt <em>is</em> the deliverable, and “Copy prompt” is the primary action on every card. Entries without one are accepted but rank below entries with one.
+  </div>
+</section>
+
+<section id="rules">
+  <div class="sec-head"><span class="sec-num">§6</span><h2>Tagging rules</h2><span class="aside">How to resolve an argument</span></div>
+  <ul class="rules">
+    <li><span class="tag">Rule 1</span><div class="body"><strong>Exactly one style. No exceptions.</strong><p>The moment an entry can be <code>[deck, report, one-pager]</code>, the matrix stops meaning anything and every filter returns everything. Something that genuinely reads as two styles is usually two entries — or one badly scoped entry.</p></div></li>
+    <li><span class="tag">Rule 2</span><div class="body"><strong>Pick style by the first ten seconds.</strong><p>Not by what it contains, but by what a person <em>does</em> with it immediately on load. A deck full of charts is still a <code>deck</code>. A report with a calculator embedded halfway down is still a <code>report</code>.</p></div></li>
+    <li><span class="tag">Rule 3</span><div class="body"><strong>Use case is the job, never the industry.</strong><p>Industry, subject matter, and domain all live in <code>topics</code>. If someone proposes adding <code>fintech</code> or <code>edtech</code> to the use-case vocabulary, the answer is no and the field they want is <code>topics</code>.</p></div></li>
+    <li><span class="tag">Rule 4</span><div class="body"><strong>Primary use case first in the array.</strong><p>It drives the default grouping and the “I want to…” landing sections. The second is for genuine cross-appeal only — not for reach.</p></div></li>
+    <li><span class="tag">Rule 5</span><div class="body"><strong>Vocabularies change by PR, not by entry.</strong><p>New terms go through a dedicated PR against <code>taxonomy.yaml</code> with a rationale and at least three existing entries that would move. Nobody invents a term inside a submission.</p></div></li>
+    <li><span class="tag">Rule 6</span><div class="body"><strong>When two styles genuinely fit, take the more specific one.</strong><p><code>simulator</code> over <code>diagram</code>. <code>comparator</code> over <code>dashboard</code>. <code>tracker</code> over <code>generator</code>. Specific beats broad, because broad is where entries go to become unfindable.</p></div></li>
+  </ul>
+</section>
+
+<section id="gates">
+  <div class="sec-head"><span class="sec-num">§7</span><h2>CI gates</h2><span class="aside">Automate the checks,<br>never the decision</span></div>
+  <div class="prose"><p class="lede">Every gate below blocks a PR. None of them merge it — a human reviews every entry, because the whole site is a machine for executing strangers' JavaScript in front of an audience that trusts you.</p></div>
+  <div class="gates">
+    <div class="gate"><span class="code">vocab</span><p><code>use_case</code>, <code>style</code>, and <code>techniques</code> validate against <code>taxonomy.yaml</code>. Unknown term fails.</p></div>
+    <div class="gate"><span class="code">self-contained</span><p>No CDN scripts, remote stylesheets, or external images. Everything inline or a data URI.</p></div>
+    <div class="gate"><span class="code">no-network</span><p>Rejects <code>fetch</code>, <code>XMLHttpRequest</code>, <code>WebSocket</code>, <code>&lt;form action&gt;</code>, and <code>&lt;input type="password"&gt;</code>.</p></div>
+    <div class="gate"><span class="code">render</span><p>Playwright loads the file at 1280×800, waits for fonts, screenshots light, dark, and 390px wide. The bot commits the light render.</p></div>
+    <div class="gate"><span class="code">no-console-errors</span><p>A clean load, or the entry doesn't ship. Catches broken artifacts before reviewers waste time.</p></div>
+    <div class="gate"><span class="code">weight</span><p>Single file under 2&nbsp;MB. Anything larger is usually an un-optimised embedded asset.</p></div>
+    <div class="gate"><span class="code">one-file</span><p>Exactly one <code>.html</code> per entry. No <code>.jsx</code>, no bundler config, nothing to compile.</p></div>
+    <div class="gate"><span class="code">near-duplicate</span><p>Warns when style + primary use case + title similarity suggests we already have this one.</p></div>
+    <div class="gate"><span class="code">license</span><p>An OSI identifier or CC0, plus an author. Unlicensed entries cannot be remixed, which is the point.</p></div>
+  </div>
+  <div class="note">
+    <b>Serve artifacts from a second origin.</b> Gallery on the primary domain, artifacts on a separate one, embedded with <code>sandbox="allow-scripts"</code> and nothing else — never <code>allow-same-origin</code> alongside it, which defeats the sandbox entirely. Add a CSP on the artifact origin blocking <code>connect-src</code> and <code>form-action</code>. The risk being managed is not XSS on your own site; it is the gallery becoming a credible distribution channel for a convincing fake login page.
+  </div>
+</section>
+
+<section id="bar">
+  <div class="sec-head"><span class="sec-num">§8</span><h2>The curation bar</h2><span class="aside">What “awesome” means here</span></div>
+  <ul class="rules">
+    <li><span class="tag">Complete</span><div class="body"><strong>It does the whole job, not a slice of it.</strong><p>Demos, stubs, and “imagine this worked” placeholders are declined.</p></div></li>
+    <li><span class="tag">Standalone</span><div class="body"><strong>It works with no network, no keys, no accounts.</strong><p>Also the security policy — the two happen to align.</p></div></li>
+    <li><span class="tag">Distinct</span><div class="body"><strong>Not the fortieth pomodoro timer.</strong><p>Maintain a public “we have enough of these” list: timers, to-do apps, tip splitters, unit converters. Decline with a link to the existing entry.</p></div></li>
+    <li><span class="tag">Robust</span><div class="body"><strong>Legible in light and dark, usable at 390px.</strong><p>Checked automatically, since the gallery shows all three renders.</p></div></li>
+    <li><span class="tag">Attributable</span><div class="body"><strong>A named author and a license that permits remixing.</strong><p>Remixing is the product. An entry nobody may copy is a screenshot.</p></div></li>
+  </ul>
+</section>
+
+<section id="roadmap">
+  <div class="sec-head"><span class="sec-num">§9</span><h2>Build order</h2><span class="aside">Static first,<br>backend only if earned</span></div>
+  <div class="phases">
+    <div class="phase"><span class="n">Phase 0</span><div><h3>Vocabulary and validator</h3><p><code>taxonomy.yaml</code>, the schema, and the lint — before a single entry exists. Every PR after this is a submission instead of a taxonomy debate.</p></div></div>
+    <div class="phase"><span class="n">Phase 1</span><div><h3>Seed the matrix</h3><p>76 showcase entries against §4, generated deliberately across cells. Not a weekend of building whatever is fun — a weekend of filling a grid.</p></div></div>
+    <div class="phase"><span class="n">Phase 2</span><div><h3>Static gallery</h3><p>Masonry grid on committed WebP thumbnails, hover swaps in the live sandboxed iframe, client-side search over human phrasing (“pricing page”, “budget tracker”), detail pages with prompt, source, and customize notes. GitHub Pages.</p></div></div>
+    <div class="phase"><span class="n">Phase 3</span><div><h3>One-click contribution</h3><p>A GitHub issue form with vocabulary dropdowns and a code field, converted into a PR by an Action. Nobody clones a repo to submit a toy — contribution friction decides whether a hybrid model survives.</p></div></div>
+    <div class="phase"><span class="n">Phase 4</span><div><h3>Stats, and nothing more</h3><p>One Cloudflare Worker for view counts, anonymous likes, and a trending sort, hydrating the grid from a single optional request. If it's down the site falls back to alphabetical. No accounts, no comments — the moment there are accounts there is moderation, and this stops being a repo.</p></div></div>
+  </div>
+</section>
+
+<footer>Specification v0.2 · awesome-claude-artifacts · MIT<br><br>An independent community project. Not affiliated with or endorsed by Anthropic. Claude is a trademark of Anthropic PBC.</footer>
+
+</div>
