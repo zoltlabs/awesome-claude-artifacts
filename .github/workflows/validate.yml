@@ -15,9 +15,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
-      - run: npm ci
+      # npm install, not npm ci: sharp's platform binaries can't be resolved
+      # into a lockfile generated on another OS. The lockfile still keys the cache.
+      - run: npm install --no-audit --no-fund
       - name: Validate entries against taxonomy.yaml
         run: npm run validate
       - name: Build index
