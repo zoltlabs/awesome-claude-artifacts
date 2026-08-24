@@ -9,7 +9,9 @@
     "validate": "node scripts/validate.mjs",
     "shoot": "node scripts/shoot.mjs",
     "index": "node scripts/build-index.mjs",
-    "check": "npm run validate && npm run index"
+    "check": "npm run validate && npm run index",
+    "site": "node scripts/build-site.mjs",
+    "build": "npm run index && npm run site"
   },
   "devDependencies": {
     "playwright": "^1.49.0",

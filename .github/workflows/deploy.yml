@@ -1,9 +1,11 @@
 name: deploy
 
-# Manual until the gallery exists (spec §9, phase 2). Enable Pages in repo
-# settings and restore the push trigger at the same time — until then this
-# would publish a bare index.json and keep the CI badge red.
+# Publishes the static gallery (spec §9, phase 2). Pages must be set to the
+# "GitHub Actions" source in repo settings — on the legacy branch source this
+# workflow's output is ignored and Jekyll renders the README instead.
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -28,12 +30,11 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Generate the uncommitted thumbnail variants
         run: npm run shoot -- --all
-      - name: Build index
-        run: npm run index
-      # TODO(phase 2): build the gallery from site/ once it exists.
+      - name: Build index and assemble the site
+        run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site/public
+          path: site/dist
 
   deploy:
     needs: build
