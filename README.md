@@ -3,6 +3,9 @@
 **A gallery of remixable, single-file Claude artifacts.** Every entry ships its full
 source, the prompt that made it, and notes on what to change to make it yours.
 
+[![validate](https://github.com/zoltlabs/awesome-claude-artifacts/actions/workflows/validate.yml/badge.svg)](https://github.com/zoltlabs/awesome-claude-artifacts/actions/workflows/validate.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 🌐 **[awesomeclaudeartifacts.com](https://awesomeclaudeartifacts.com)** · 📐 [Taxonomy spec](docs/taxonomy.html) · 🤝 [Contributing](CONTRIBUTING.md)
 
 > [!NOTE]

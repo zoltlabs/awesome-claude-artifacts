@@ -1,8 +1,9 @@
 name: deploy
 
+# Manual until the gallery exists (spec §9, phase 2). Enable Pages in repo
+# settings and restore the push trigger at the same time — until then this
+# would publish a bare index.json and keep the CI badge red.
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
 
 permissions:
