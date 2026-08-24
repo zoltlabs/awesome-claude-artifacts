@@ -1,0 +1,722 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>State of the Municipal Tree Canopy</title>
+<style>
+:root{
+  --paper:#FBF8F1; --ink:#232019; --ink-2:#4C4639; --grey:#6E6659; --rule:#DED6C6;
+  --rule-soft:#EBE5D9; --accent:#8C5A2B; --accent-soft:#C79A6B; --panel:#F5F0E5; --alt:#5B6B4E;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14120E; --ink:#E8E2D5; --ink-2:#BEB6A5; --grey:#8F8776; --rule:#332E25;
+    --rule-soft:#26221B; --accent:#C4874A; --accent-soft:#8A5F33; --panel:#1C1913; --alt:#9BB183;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14120E; --ink:#E8E2D5; --ink-2:#BEB6A5; --grey:#8F8776; --rule:#332E25;
+  --rule-soft:#26221B; --accent:#C4874A; --accent-soft:#8A5F33; --panel:#1C1913; --alt:#9BB183;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  font-size:17.5px; line-height:1.66;
+  font-variant-numeric:oldstyle-nums proportional-nums;
+  -webkit-font-smoothing:antialiased;
+}
+.sans,.label{font-family:ui-sans-serif,"Helvetica Neue",Helvetica,Arial,sans-serif}
+.tnum{font-variant-numeric:tabular-nums lining-nums}
+
+/* ---------- page frame: main column plus a working margin ---------- */
+.page{max-width:1080px; margin:0 auto; padding:0 26px 90px}
+.grid{display:grid; grid-template-columns:186px minmax(0,64ch); gap:0 38px; align-items:start}
+.grid > *{min-width:0}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+
+/* ---------- masthead ---------- */
+.masthead{border-bottom:2px solid var(--ink); padding:46px 0 22px; margin-bottom:34px}
+.imprint{
+  font-family:ui-sans-serif,Helvetica,Arial,sans-serif; font-size:11px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--grey); display:flex; gap:16px; flex-wrap:wrap;
+}
+.imprint b{color:var(--accent); font-weight:600}
+h1{
+  margin:20px 0 0; font-size:clamp(34px,6vw,58px); line-height:1.04; font-weight:600;
+  letter-spacing:-.015em; text-wrap:balance; max-width:20ch;
+}
+.standfirst{margin:18px 0 0; font-size:20px; line-height:1.52; color:var(--ink-2); max-width:56ch; font-style:italic}
+.byline{margin:22px 0 0; font-size:14px; color:var(--grey); font-family:ui-sans-serif,Helvetica,Arial,sans-serif}
+
+/* ---------- contents, in the margin ---------- */
+nav.toc{position:sticky; top:22px; font-family:ui-sans-serif,Helvetica,Arial,sans-serif}
+nav.toc h2{font-size:10.5px; letter-spacing:.16em; text-transform:uppercase; color:var(--grey); margin:0 0 10px; font-weight:600}
+nav.toc ol{list-style:none; margin:0; padding:0; counter-reset:toc}
+nav.toc li{counter-increment:toc; margin-bottom:1px}
+nav.toc a{
+  display:flex; gap:8px; font-size:12.5px; line-height:1.4; color:var(--ink-2);
+  text-decoration:none; padding:4px 6px 4px 0; border-left:2px solid transparent; padding-left:9px;
+}
+nav.toc a::before{content:counter(toc) "."; color:var(--grey); flex:0 0 auto; font-variant-numeric:tabular-nums}
+nav.toc a:hover{color:var(--accent)}
+nav.toc a.on{border-left-color:var(--accent); color:var(--ink); font-weight:600}
+@media (max-width:900px){
+  nav.toc{position:static; border-bottom:1px solid var(--rule); padding-bottom:16px; margin-bottom:26px}
+  nav.toc ol{columns:2; column-gap:20px}
+}
+
+/* ---------- body ---------- */
+article section{margin-bottom:44px; scroll-margin-top:20px}
+h2.sec{
+  font-size:25px; font-weight:600; letter-spacing:-.01em; margin:0 0 4px; text-wrap:balance;
+  padding-top:14px; border-top:1px solid var(--rule);
+}
+h2.sec .n{
+  font-family:ui-sans-serif,Helvetica,Arial,sans-serif; font-size:11px; letter-spacing:.16em;
+  color:var(--accent); display:block; margin-bottom:7px; font-weight:600;
+}
+h3{font-size:18.5px; margin:28px 0 2px; font-weight:600}
+p{margin:0 0 15px}
+p.lead::first-letter{
+  float:left; font-size:56px; line-height:.84; padding:5px 8px 0 0; color:var(--accent); font-weight:600;
+}
+strong{font-weight:600}
+em.term{font-style:italic; color:var(--ink-2)}
+a{color:var(--accent); text-underline-offset:2px}
+
+/* footnote references */
+a.fn{
+  font-size:.72em; vertical-align:super; text-decoration:none; padding:0 1px;
+  font-variant-numeric:lining-nums; font-family:ui-sans-serif,Helvetica,Arial,sans-serif;
+}
+a.fn:hover{background:var(--accent); color:var(--paper)}
+:target{background:var(--panel); box-shadow:0 0 0 6px var(--panel)}
+
+/* pull quote */
+blockquote{
+  margin:26px 0; padding:0 0 0 20px; border-left:3px solid var(--accent);
+  font-size:20px; line-height:1.45; font-style:italic; color:var(--ink);
+}
+
+/* marginal notes: hang in the left column on wide screens */
+.marginal{
+  font-family:ui-sans-serif,Helvetica,Arial,sans-serif; font-size:12px; line-height:1.5;
+  color:var(--grey); border-top:1px solid var(--rule); padding-top:7px; margin:0 0 20px;
+}
+@media (min-width:901px){
+  .marginal{float:right; width:180px; margin-right:-206px; margin-left:24px; clear:right}
+}
+@media (max-width:900px){
+  .marginal{border-left:2px solid var(--rule); border-top:0; padding:0 0 0 12px; margin:18px 0}
+}
+.marginal b{color:var(--accent); font-weight:600; display:block; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:3px}
+
+/* ---------- figures ---------- */
+figure{margin:26px 0; break-inside:avoid}
+figure .frame{border:1px solid var(--rule); background:var(--panel); padding:14px 14px 8px}
+figure svg{display:block; width:100%; height:auto; overflow:visible}
+figcaption{
+  font-family:ui-sans-serif,Helvetica,Arial,sans-serif; font-size:12.5px; line-height:1.5;
+  color:var(--ink-2); margin-top:9px; padding-top:8px; border-top:1px solid var(--rule-soft);
+}
+figcaption b{color:var(--ink); font-weight:600}
+figcaption .src{display:block; margin-top:5px; color:var(--grey); font-size:11.5px}
+.figref{white-space:nowrap; font-variant-numeric:lining-nums}
+
+/* ---------- table ---------- */
+.tbl{overflow-x:auto; margin:24px 0; border:1px solid var(--rule)}
+table{border-collapse:collapse; width:100%; min-width:440px; font-size:14.5px;
+  font-family:ui-sans-serif,Helvetica,Arial,sans-serif}
+caption{
+  text-align:left; padding:10px 12px; background:var(--panel); border-bottom:1px solid var(--rule);
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--grey); font-weight:600;
+}
+th,td{padding:7px 12px; border-bottom:1px solid var(--rule-soft); text-align:left}
+th{font-size:11px; letter-spacing:.09em; text-transform:uppercase; color:var(--grey); font-weight:600}
+td.num,th.num{text-align:right; font-variant-numeric:tabular-nums lining-nums}
+tbody tr:last-child td{border-bottom:0}
+td.neg{color:var(--accent)}
+
+/* ---------- appendix + notes ---------- */
+.appendix{background:var(--panel); border:1px solid var(--rule); padding:22px 24px 8px; margin-top:14px}
+.appendix h3{margin-top:20px}
+.appendix h3:first-of-type{margin-top:0}
+ol.notes{font-size:14px; line-height:1.55; color:var(--ink-2); padding-left:22px; margin:0}
+ol.notes li{margin-bottom:9px; scroll-margin-top:24px}
+ol.notes a.back{text-decoration:none; font-family:ui-sans-serif,Helvetica,Arial,sans-serif; font-size:11px}
+footer.colophon{
+  margin-top:50px; padding-top:16px; border-top:2px solid var(--ink);
+  font-family:ui-sans-serif,Helvetica,Arial,sans-serif; font-size:11.5px; color:var(--grey);
+  display:flex; gap:20px; flex-wrap:wrap; justify-content:space-between;
+}
+.disclaimer{
+  margin-top:26px; border:1px dashed var(--rule); padding:12px 16px;
+  font-family:ui-sans-serif,Helvetica,Arial,sans-serif; font-size:12.5px; color:var(--grey);
+}
+.disclaimer b{color:var(--accent)}
+
+@media print{
+  nav.toc,.disclaimer{display:none}
+  body{background:#fff; color:#000; font-size:11pt}
+  .grid{display:block}
+  .marginal{float:none; width:auto; margin:12px 0; border-left:2px solid #999; border-top:0; padding-left:10px}
+  figure,section{break-inside:avoid}
+  h2.sec{break-after:avoid}
+  .page{padding:0}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="masthead">
+  <div class="imprint">
+    <span>Calderwick City Council · Parks &amp; Green Infrastructure</span>
+    <span><b>Report 26/04</b></span>
+    <span>August 2026</span>
+  </div>
+  <h1>State of the Municipal Tree Canopy</h1>
+  <p class="standfirst">Calderwick has lost a fifth of its tree canopy in sixteen years. The loss
+  is not evenly spread, it is not mostly caused by development, and it is not being replaced by
+  the planting programme designed to replace it.</p>
+  <p class="byline">Prepared for the Environment &amp; Climate Scrutiny Committee · 22 pages · figures 1–6</p>
+</header>
+
+<div class="grid">
+  <nav class="toc" aria-label="Contents">
+    <h2>Contents</h2>
+    <ol id="toc"></ol>
+  </nav>
+
+  <article>
+
+  <section id="s1">
+    <h2 class="sec"><span class="n">Section one</span>Summary of findings</h2>
+    <p class="lead">Canopy cover across the eleven wards of Calderwick stood at <strong>17.9%</strong>
+    in the spring 2025 survey, down from 21.4% in 2009.<a class="fn" href="#fn1" id="fnref1">1</a>
+    That is a relative decline of sixteen per cent over sixteen years, in a period during which the
+    council planted more trees each year than in any comparable period in its history.</p>
+
+    <p class="marginal"><b>Headline</b>Canopy fell from 21.4% to 17.9% between 2009 and 2025, while
+    annual planting rose by a factor of two and a half.</p>
+
+    <p>Four findings follow from the survey, and they are uncomfortable in a particular order.
+    First, the loss is concentrated: three wards account for more than half of the absolute canopy
+    lost <span class="figref">(Fig. 1)</span>. Second, those three wards are among the four most
+    deprived in the city, so the canopy gap has widened along the same axis as every other
+    environmental inequality here <span class="figref">(Fig. 3)</span>. Third, the largest single
+    driver is not development but disease — ash dieback has moved through a stock in which nearly
+    one tree in five was ash <span class="figref">(Fig. 4)</span>.<a class="fn" href="#fn2" id="fnref2">2</a>
+    Fourth, and most consequentially for policy, the replacement programme is failing quietly:
+    planting numbers have risen every cohort since 2015 while five-year establishment survival has
+    fallen from 71% to 48% <span class="figref">(Fig. 5)</span>.</p>
+
+    <blockquote>Gross planting is not net canopy. A tree planted and lost within five years is an
+    expense, not an asset, and the council currently reports the expense as the asset.</blockquote>
+
+    <p>Three of these four findings were visible in the 2019 survey and were not acted on. This
+    report does not repeat the 2019 recommendations. It sets out what has changed since, what the
+    2025 data adds, and the three decisions that are now unavoidable.</p>
+  </section>
+
+  <section id="s2">
+    <h2 class="sec"><span class="n">Section two</span>Method, in brief</h2>
+    <p>Canopy cover is measured from leaf-on aerial imagery classified at 25&nbsp;cm resolution and
+    validated against a stratified ground sample of 480 points.<a class="fn" href="#fn3" id="fnref3">3</a>
+    <em class="term">Canopy cover</em> here means the proportion of ground area beneath the vertical
+    projection of tree crowns, including private gardens and rail and river corridors — not only
+    council-owned stock, which is roughly a third of the total.</p>
+    <p class="marginal"><b>Comparability</b>2009 imagery was captured at a coarser resolution than
+    2019 and 2025. The re-analysis in Appendix&nbsp;A puts the resulting bias at under 0.4 percentage
+    points and in the direction of understating loss.</p>
+    <p>Full method, the re-cut of 2009 figures to current ward boundaries, and the four limitations
+    that materially affect interpretation are in <a href="#appendix">Appendix&nbsp;A</a>. Readers who
+    intend to quote a single number from this report should read that appendix first.</p>
+  </section>
+
+  <section id="s3">
+    <h2 class="sec"><span class="n">Section three</span>Where the canopy went</h2>
+    <p>Citywide canopy has declined at every survey since 2009, and the rate has accelerated
+    <span class="figref">(Fig. 2)</span>. The 2019–2025 interval lost 1.9 percentage points against
+    1.6 in the decade before it — a period half as long shedding more canopy.</p>
+
+    <figure id="fig1">
+      <div class="frame"><div id="c1"></div></div>
+      <figcaption><b>Figure 1.</b> Canopy cover by ward, 2009 and 2025. Every ward lost cover; the
+      wards that had least to begin with lost the largest share of it. Eastfield, Granby and Jarrow
+      Bank between them account for 54% of absolute canopy area lost.
+      <span class="src">Source: Calderwick canopy survey 2009, 2025, re-cut to 2019 ward boundaries.<a class="fn" href="#fn4" id="fnref4">4</a></span></figcaption>
+    </figure>
+
+    <figure id="fig2">
+      <div class="frame"><div id="c2"></div></div>
+      <figcaption><b>Figure 2.</b> Citywide canopy cover at five survey points. The dashed line is
+      the trajectory required to reach the council's adopted 2035 target of 22%.
+      <span class="src">Source: as Figure 1, plus interim surveys 2013 and 2022.</span></figcaption>
+    </figure>
+
+    <p>The adopted target of 22% by 2035 now requires adding more canopy in nine years than the city
+    has lost in sixteen, starting from a stock that is younger, smaller-crowned and less established
+    than the one it replaced. No scenario modelled in Appendix&nbsp;A reaches it.</p>
+  </section>
+
+  <section id="s4">
+    <h2 class="sec"><span class="n">Section four</span>Who lost it</h2>
+    <p>Canopy in Calderwick tracks deprivation closely and has done for as long as it has been
+    measured. The 2025 survey finds the relationship not merely intact but steeper
+    <span class="figref">(Fig. 3)</span>: the most deprived decile now sits at 7.5% mean cover
+    against 28.6% in the least deprived, a gap that has widened by 2.3 percentage points since
+    2009.<a class="fn" href="#fn5" id="fnref5">5</a></p>
+
+    <p class="marginal"><b>Why it compounds</b>Street trees in low-canopy wards are younger,
+    smaller and more exposed to kerbside damage, so each loss removes proportionally more crown
+    and each replacement returns less.</p>
+
+    <figure id="fig3">
+      <div class="frame"><div id="c3"></div></div>
+      <figcaption><b>Figure 3.</b> Canopy cover against index of multiple deprivation decile, by
+      ward, 2025. Decile 1 is most deprived. The fitted line explains 84% of variance between wards.
+      <span class="src">Source: canopy survey 2025; IMD 2023 ward-level ranking.<a class="fn" href="#fn6" id="fnref6">6</a></span></figcaption>
+    </figure>
+
+    <figure id="fig6">
+      <div class="frame"><div id="c6"></div></div>
+      <figcaption><b>Figure 4.</b> Mean July land surface temperature by ward, expressed as a
+      difference from the city mean, against canopy cover. The two wards furthest above the city
+      mean are the two with the least canopy.
+      <span class="src">Source: satellite thermal imagery, July 2024 and July 2025, mean of eight
+      cloud-free passes.<a class="fn" href="#fn7" id="fnref7">7</a></span></figcaption>
+    </figure>
+
+    <p>This is the finding with the shortest route to a statutory duty. Eastfield's summer surface
+    temperature runs 3.2°C above the city mean, and Eastfield contains two of the city's three
+    care homes.</p>
+  </section>
+
+  <section id="s5">
+    <h2 class="sec"><span class="n">Section five</span>Why: a monoculture meeting a pathogen</h2>
+    <p>Calderwick's canopy was, until recently, 18% ash by stem count — a legacy of post-war
+    amenity planting that favoured a fast, cheap, locally abundant species
+    <span class="figref">(Fig. 5)</span>. Ground survey in 2025 found 62% of surveyed ash showing
+    crown decline consistent with <em class="term">Hymenoscyphus fraxineus</em>.<a class="fn" href="#fn8" id="fnref8">8</a></p>
+
+    <figure id="fig4">
+      <div class="frame"><div id="c4"></div></div>
+      <figcaption><b>Figure 5.</b> Species composition by stem count, 2025 survey. Ash, in the
+      darker band, is the single largest component and the one now in decline. No species should
+      exceed 10% under the council's own adopted diversity standard.
+      <span class="src">Source: ground survey of 4,180 stems, stratified by ward.</span></figcaption>
+    </figure>
+
+    <p>The arithmetic is not subtle. If the majority of declining ash is removed on safety grounds
+    by 2032, as the arboricultural team's programme assumes, that alone removes roughly eleven
+    percentage points of stems — before any replacement planting is counted, and concentrated in
+    the wards where ash was planted most heavily, which are the wards already carrying the least
+    canopy.</p>
+  </section>
+
+  <section id="s6">
+    <h2 class="sec"><span class="n">Section six</span>What replacement actually delivers</h2>
+    <p>The council planted 3,100 trees in the 2023 cohort against 1,240 in 2015. Over the same
+    period, establishment survival fell by 23 percentage points
+    <span class="figref">(Fig. 6)</span>. The 2021 cohort — the last with a complete five-year
+    record — retained 54%.</p>
+
+    <figure id="fig5">
+      <div class="frame"><div id="c5"></div></div>
+      <figcaption><b>Figure 6.</b> Trees planted and establishment survival, by cohort. Bars are
+      trees planted; the line is the proportion surviving to five years. The 2023 cohort is a
+      three-year provisional figure and is shown hollow.
+      <span class="src">Source: council planting records. 2016 records are incomplete and that
+      cohort is omitted.<a class="fn" href="#fn9" id="fnref9">9</a></span></figcaption>
+    </figure>
+
+    <div class="tbl">
+      <table>
+        <caption>Cost per surviving tree, by cohort</caption>
+        <thead><tr>
+          <th>Cohort</th><th class="num">Planted</th><th class="num">Surviving at 5 yrs</th>
+          <th class="num">Programme cost</th><th class="num">Cost per survivor</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>2015</td><td class="num">1,240</td><td class="num">880</td><td class="num">£186,000</td><td class="num">£211</td></tr>
+          <tr><td>2017</td><td class="num">1,610</td><td class="num">1,095</td><td class="num">£249,600</td><td class="num">£228</td></tr>
+          <tr><td>2019</td><td class="num">2,050</td><td class="num">1,210</td><td class="num">£332,100</td><td class="num">£274</td></tr>
+          <tr><td>2021</td><td class="num">2,480</td><td class="num">1,339</td><td class="num">£421,600</td><td class="num" >£315</td></tr>
+          <tr><td>2023</td><td class="num">3,100</td><td class="num">1,488<span class="figref"> *</span></td><td class="num">£561,100</td><td class="num neg">£377 *</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="marginal"><b>* Provisional</b>2023 survival is projected from the three-year figure
+    using the 2019 and 2021 attrition curves. If those curves hold it is optimistic by 4–6 points.</p>
+
+    <p>Unit cost per surviving tree has risen 79% in eight years. Roughly a third of that is input
+    price inflation. The remainder is mortality: the programme is buying the same number of
+    established trees for substantially more money, and reporting the gross figure to committee.</p>
+  </section>
+
+  <section id="s7">
+    <h2 class="sec"><span class="n">Section seven</span>What follows</h2>
+    <p>Three decisions are now unavoidable, and only the first is primarily about money.</p>
+    <p><strong>One: report net, not gross.</strong> Committee papers should carry canopy area and
+    five-year survival alongside trees planted. The current reporting line is not wrong, but it
+    cannot detect the failure documented in Section six, and it did not.</p>
+    <p><strong>Two: fund three years of aftercare, or plant fewer trees.</strong> Watering and
+    formative pruning through establishment is the intervention with evidence behind it. At current
+    unit costs, 1,900 trees with three years of aftercare would return more established canopy than
+    3,100 without it, for a comparable budget.</p>
+    <p><strong>Three: weight planting by canopy deficit, not by ward request volume.</strong> The
+    current allocation responds to requests, and requests come from wards that already have trees.
+    That mechanism has produced the gap in Figure&nbsp;3 and will widen it.</p>
+  </section>
+
+  <section id="appendix">
+    <h2 class="sec"><span class="n">Appendix A</span>Method and limitations</h2>
+    <div class="appendix">
+      <h3>Survey method</h3>
+      <p>Leaf-on imagery was captured between 15 June and 2 July 2025 at 25&nbsp;cm ground sample
+      distance and classified using a supervised model trained on 1,200 manually labelled tiles.
+      Overall classification accuracy against the ground sample was 94.1%, with the residual error
+      concentrated in distinguishing dense shrub from low crown.</p>
+
+      <h3>Four limitations that affect interpretation</h3>
+      <p><strong>Resolution change.</strong> The 2009 survey used 50&nbsp;cm imagery. Re-classifying
+      the 2019 imagery at the coarser resolution suggests the older figure understates canopy by
+      0.3–0.4 percentage points, meaning true loss since 2009 is marginally <em>greater</em> than
+      reported here, not less.</p>
+      <p><strong>Boundary change.</strong> Ward boundaries were redrawn in 2019. The 2009 ward
+      figures in Figure&nbsp;1 are re-cut to current boundaries by area-weighted apportionment,
+      which is exact for canopy area and approximate for percentage cover. Beckside and Ingle Vale
+      are the two wards most affected; treat differences under 0.5 points in those two as noise.</p>
+      <p><strong>Private land.</strong> Roughly two-thirds of canopy stands on land the council does
+      not control. The policy levers in Section seven reach the other third. Any target expressed as
+      total canopy is therefore partly a forecast of private behaviour.</p>
+      <p><strong>Surface, not air.</strong> Figure&nbsp;4 uses land surface temperature, which is
+      not the temperature a person experiences. It is a reliable indicator of relative thermal
+      exposure between wards and an unreliable estimate of absolute heat risk.</p>
+
+      <h3>Scenario modelling</h3>
+      <p>Three scenarios were run to 2035: current programme, aftercare-funded, and
+      aftercare-funded with deficit weighting. None reaches the adopted 22% target. The best case
+      reaches 19.4% and closes the deprivation gap by 4.1 points, which is the outcome this report
+      treats as the realistic objective.</p>
+    </div>
+
+    <h3 style="margin-top:30px">Notes</h3>
+    <ol class="notes" id="notes"></ol>
+
+    <p class="disclaimer"><b>This report is fictional.</b> Calderwick does not exist, and every
+    figure in it is synthetic — constructed to be internally consistent and to behave like real
+    municipal canopy data, but not measured from anywhere. It is published as a worked example of
+    the form: how a findings report structures an argument, states its own limitations, and prints.</p>
+  </section>
+
+  </article>
+</div>
+
+<footer class="colophon">
+  <span>Calderwick City Council · Report 26/04 · August 2026</span>
+  <span>Synthetic data · single file · no network</span>
+</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var NS = "http://www.w3.org/2000/svg";
+  var C = {
+    ink: "var(--ink)", ink2: "var(--ink-2)", grey: "var(--grey)", rule: "var(--rule)",
+    accent: "var(--accent)", soft: "var(--accent-soft)", alt: "var(--alt)"
+  };
+
+  /* ---------- data ---------- */
+  var WARDS = [
+    { w:"Ashgrove",    y09:31.2, y25:29.4, imd:10, area:412, dT:-2.1 },
+    { w:"Carrow Hill", y09:28.9, y25:27.8, imd:9,  area:355, dT:-1.6 },
+    { w:"Halstead",    y09:26.3, y25:24.1, imd:8,  area:298, dT:-1.2 },
+    { w:"Fenwick",     y09:22.7, y25:20.9, imd:7,  area:333, dT:-0.4 },
+    { w:"Beckside",    y09:24.6, y25:21.1, imd:5,  area:388, dT:-0.3 },
+    { w:"Kirkstall",   y09:20.1, y25:18.4, imd:6,  area:271, dT:0.2 },
+    { w:"Dunmoor",     y09:19.4, y25:15.2, imd:3,  area:344, dT:1.1 },
+    { w:"Ingle Vale",  y09:17.5, y25:14.0, imd:4,  area:302, dT:1.4 },
+    { w:"Eastfield",   y09:12.1, y25:8.6,  imd:2,  area:426, dT:3.2 },
+    { w:"Jarrow Bank", y09:11.2, y25:8.1,  imd:1,  area:281, dT:2.6 },
+    { w:"Granby",      y09:9.8,  y25:6.9,  imd:1,  area:319, dT:2.9 }
+  ];
+  var CITY = [ [2009,21.4], [2013,20.6], [2019,19.8], [2022,18.9], [2025,17.9] ];
+  var SPECIES = [
+    ["Ash",18,1], ["Sycamore",14,0], ["Oak",11,0], ["Lime",9,0], ["Birch",8,0],
+    ["Cherry",7,0], ["Maple",6,0], ["Hornbeam",5,0], ["Plane",4,0], ["Other",18,0]
+  ];
+  var COHORTS = [
+    { y:2015, n:1240, s:71, prov:false }, { y:2017, n:1610, s:68, prov:false },
+    { y:2019, n:2050, s:59, prov:false }, { y:2021, n:2480, s:54, prov:false },
+    { y:2023, n:3100, s:48, prov:true }
+  ];
+
+  /* ---------- tiny svg helpers ---------- */
+  function svg(w, h){
+    var s = document.createElementNS(NS, "svg");
+    s.setAttribute("viewBox", "0 0 " + w + " " + h);
+    s.setAttribute("role", "img");
+    s.style.fontFamily = 'ui-sans-serif, Helvetica, Arial, sans-serif';
+    return s;
+  }
+  function el(p, name, attrs, text){
+    var n = document.createElementNS(NS, name);
+    for (var k in attrs) if (attrs[k] !== undefined && attrs[k] !== null) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    p.appendChild(n); return n;
+  }
+  function txt(p, x, y, s, o){
+    o = o || {};
+    return el(p, "text", {
+      x:x, y:y, fill:o.fill || C.grey, "font-size":o.size || 10.5,
+      "text-anchor":o.anchor || "start", "dominant-baseline":o.base || "middle",
+      "font-weight":o.weight, "letter-spacing":o.ls, opacity:o.opacity,
+      "font-variant-numeric":"tabular-nums lining-nums"
+    }, s);
+  }
+  /* Point labels collide wherever two wards sit close together. Collect them,
+     push overlapping ones apart vertically, and draw a leader for any that moved. */
+  function placeLabels(s, items){
+    items.slice().sort(function(a, b){ return a.y - b.y; }).reduce(function(prev, it){
+      if (prev !== null && it.y - prev < 11.5) it.ly = prev + 11.5; else it.ly = it.y;
+      return it.ly;
+    }, null);
+    items.forEach(function(it){
+      if (Math.abs(it.ly - it.y) > 2){
+        el(s, "line", { x1:it.x + 4, y1:it.y, x2:it.x + 7.5, y2:it.ly,
+          stroke:it.fill, "stroke-width":.8, opacity:.55 });
+      }
+      txt(s, it.x + 9, it.ly, it.text, { size:it.size || 9.5, fill:it.fill, weight:it.weight });
+    });
+  }
+
+  function mount(id, node, label){ node.setAttribute("aria-label", label); document.getElementById(id).appendChild(node); }
+
+  /* ---------- Fig 1 · dumbbell ---------- */
+  (function(){
+    var rows = WARDS.slice().sort(function(a,b){ return b.y25 - a.y25; });
+    var W = 640, rowH = 25, T = 26, L = 96, R = 46;
+    var H = T + rows.length * rowH + 16;
+    var s = svg(W, H), max = 34;
+    var x = function(v){ return L + v / max * (W - L - R); };
+    for (var g = 0; g <= 30; g += 10){
+      el(s, "line", { x1:x(g), y1:T - 12, x2:x(g), y2:H - 14, stroke:C.rule, "stroke-width":1 });
+      txt(s, x(g), T - 18, g + "%", { anchor:"middle", size:10 });
+    }
+    rows.forEach(function(d, i){
+      var y = T + i * rowH + rowH / 2;
+      txt(s, L - 10, y, d.w, { anchor:"end", size:11, fill:C.ink });
+      el(s, "line", { x1:x(d.y25), y1:y, x2:x(d.y09), y2:y, stroke:C.soft, "stroke-width":2 });
+      el(s, "circle", { cx:x(d.y09), cy:y, r:4, fill:"var(--panel)", stroke:C.grey, "stroke-width":1.5 });
+      el(s, "circle", { cx:x(d.y25), cy:y, r:4.5, fill:C.accent });
+      txt(s, x(d.y25) - 9, y, d.y25.toFixed(1), { anchor:"end", size:10, fill:C.accent, weight:600 });
+    });
+    var ly = H - 4;
+    el(s, "circle", { cx:L, cy:ly, r:4, fill:"var(--panel)", stroke:C.grey, "stroke-width":1.5 });
+    txt(s, L + 9, ly, "2009", { size:10 });
+    el(s, "circle", { cx:L + 56, cy:ly, r:4.5, fill:C.accent });
+    txt(s, L + 65, ly, "2025", { size:10 });
+    mount("c1", s, "Dumbbell chart of canopy cover by ward in 2009 and 2025. Every ward declined.");
+  })();
+
+  /* ---------- Fig 2 · citywide trend ---------- */
+  (function(){
+    var W = 640, H = 250, L = 44, R = 20, T = 20, B = 34;
+    var s = svg(W, H);
+    var x = function(y){ return L + (y - 2009) / (2035 - 2009) * (W - L - R); };
+    var yv = function(v){ return T + (23.5 - v) / (23.5 - 5) * (H - T - B); };
+    [5,10,15,20].forEach(function(v){
+      el(s, "line", { x1:L, y1:yv(v), x2:W - R, y2:yv(v), stroke:C.rule });
+      txt(s, L - 8, yv(v), v + "%", { anchor:"end", size:10 });
+    });
+    [2009,2015,2020,2025,2030,2035].forEach(function(y){
+      txt(s, x(y), H - B + 14, String(y), { anchor:"middle", size:10 });
+    });
+    // target trajectory
+    el(s, "line", { x1:x(2025), y1:yv(17.9), x2:x(2035), y2:yv(22),
+      stroke:C.alt, "stroke-width":1.6, "stroke-dasharray":"5 4" });
+    txt(s, x(2035), yv(22) - 12, "target 22%", { anchor:"end", size:10, fill:C.alt, weight:600 });
+    // observed
+    var d = CITY.map(function(p, i){ return (i ? "L" : "M") + x(p[0]) + " " + yv(p[1]); }).join(" ");
+    el(s, "path", { d:d, fill:"none", stroke:C.accent, "stroke-width":2.4 });
+    CITY.forEach(function(p){
+      el(s, "circle", { cx:x(p[0]), cy:yv(p[1]), r:4, fill:C.accent });
+      txt(s, x(p[0]), yv(p[1]) - 13, p[1].toFixed(1), { anchor:"middle", size:10, fill:C.ink, weight:600 });
+    });
+    txt(s, L, T - 6, "CANOPY COVER, CITYWIDE", { size:9.5, ls:"0.12em", weight:600 });
+    mount("c2", s, "Line chart of citywide canopy cover falling from 21.4% in 2009 to 17.9% in 2025, against a rising target line to 22% by 2035.");
+  })();
+
+  /* ---------- Fig 3 · canopy vs deprivation ---------- */
+  (function(){
+    var W = 640, H = 280, L = 44, R = 90, T = 22, B = 40;
+    var s = svg(W, H);
+    var x = function(v){ return L + (v - 0.4) / 10.2 * (W - L - R); };
+    var y = function(v){ return T + (33 - v) / 33 * (H - T - B); };
+    [0,10,20,30].forEach(function(v){
+      el(s, "line", { x1:L, y1:y(v), x2:W - R, y2:y(v), stroke:C.rule });
+      txt(s, L - 8, y(v), v + "%", { anchor:"end", size:10 });
+    });
+    for (var d2 = 1; d2 <= 10; d2++) txt(s, x(d2), H - B + 15, String(d2), { anchor:"middle", size:10 });
+    txt(s, (L + W - R) / 2, H - B + 31, "IMD DECILE  ·  1 = MOST DEPRIVED", { anchor:"middle", size:9.5, ls:"0.1em", weight:600 });
+    // least-squares fit
+    var n = WARDS.length,
+        sx = WARDS.reduce(function(a,w){ return a + w.imd; }, 0),
+        sy = WARDS.reduce(function(a,w){ return a + w.y25; }, 0),
+        sxy = WARDS.reduce(function(a,w){ return a + w.imd * w.y25; }, 0),
+        sxx = WARDS.reduce(function(a,w){ return a + w.imd * w.imd; }, 0);
+    var b = (n * sxy - sx * sy) / (n * sxx - sx * sx), a0 = (sy - b * sx) / n;
+    el(s, "line", { x1:x(1), y1:y(a0 + b), x2:x(10), y2:y(a0 + b * 10),
+      stroke:C.soft, "stroke-width":1.8, "stroke-dasharray":"6 4" });
+    var labels = [];
+    WARDS.forEach(function(w){
+      var hot = w.imd <= 2;
+      el(s, "circle", { cx:x(w.imd), cy:y(w.y25), r:5.5, fill:hot ? C.accent : C.ink, opacity:hot ? 1 : .55 });
+      labels.push({ x:x(w.imd), y:y(w.y25), text:w.w, fill:hot ? C.accent : C.grey, weight:hot ? 600 : 400 });
+    });
+    placeLabels(s, labels);
+    txt(s, W - R + 4, T + 6, "r² = 0.84", { size:10, fill:C.soft, weight:600 });
+    mount("c3", s, "Scatter plot: wards with higher deprivation have markedly lower canopy cover, with a fitted line explaining 84% of variance.");
+  })();
+
+  /* ---------- Fig 4 (thermal) ---------- */
+  (function(){
+    var W = 640, H = 260, L = 52, R = 74, T = 22, B = 40;
+    var s = svg(W, H);
+    var x = function(v){ return L + v / 32 * (W - L - R); };
+    var y = function(v){ return T + (3.8 - v) / 6.6 * (H - T - B); };
+    [-2,-1,0,1,2,3].forEach(function(v){
+      var solid = v === 0;
+      el(s, "line", { x1:L, y1:y(v), x2:W - R, y2:y(v), stroke:solid ? C.grey : C.rule, "stroke-width":solid ? 1.4 : 1 });
+      txt(s, L - 8, y(v), (v > 0 ? "+" : "") + v + "°", { anchor:"end", size:10, weight:solid ? 600 : 400 });
+    });
+    [0,10,20,30].forEach(function(v){ txt(s, x(v), H - B + 15, v + "%", { anchor:"middle", size:10 }); });
+    txt(s, (L + W - R) / 2, H - B + 31, "CANOPY COVER, 2025", { anchor:"middle", size:9.5, ls:"0.1em", weight:600 });
+    txt(s, L - 8, T - 6, "Δ°C", { anchor:"end", size:9.5, weight:600 });
+    var tl = [];
+    WARDS.forEach(function(w){
+      var hot = w.dT > 2;
+      el(s, "circle", { cx:x(w.y25), cy:y(w.dT), r:5.5, fill:hot ? C.accent : C.ink, opacity:hot ? 1 : .5 });
+      if (hot || w.dT < -1.5) tl.push({ x:x(w.y25), y:y(w.dT), text:w.w, fill:hot ? C.accent : C.grey, weight:600 });
+    });
+    placeLabels(s, tl);
+    txt(s, W - R + 4, y(0), "city mean", { size:9.5 });
+    mount("c6", s, "Scatter plot: wards with less canopy run hotter in July, up to 3.2 degrees above the city mean.");
+  })();
+
+  /* ---------- Fig 5 · species ---------- */
+  (function(){
+    var W = 640, H = 146, T = 34, barH = 36;
+    var s = svg(W, H), acc = 0;
+    txt(s, 0, 9, "SHARE OF STEMS, 2025 GROUND SURVEY", { size:9.5, ls:"0.12em", weight:600 });
+    // the diversity standard reads as a legend entry, clear of the title
+    el(s, "line", { x1:W - 132, y1:9, x2:W - 118, y2:9, stroke:C.alt, "stroke-width":1.6, "stroke-dasharray":"4 3" });
+    txt(s, W - 112, 9, "10% diversity standard", { size:9.5, fill:C.alt, weight:600 });
+
+    var others = SPECIES.filter(function(sp){ return !sp[2]; }).length, oi = 0;
+    var small = [];
+    SPECIES.forEach(function(sp, i){
+      var w = sp[1] / 100 * W;
+      var op = sp[2] ? 1 : (0.58 - (oi++ / Math.max(1, others - 1)) * 0.44);
+      el(s, "rect", { x:acc, y:T, width:Math.max(0, w - 1.5), height:barH,
+        fill: sp[2] ? C.accent : C.ink, opacity: op });
+      if (sp[1] >= 8){
+        txt(s, acc + w / 2 - 1, T + barH / 2, sp[1] + "%", {
+          anchor:"middle", size:10.5, fill: sp[2] ? "var(--panel)" : C.ink,
+          weight:600, opacity: sp[2] ? 1 : undefined });
+        txt(s, acc + w / 2 - 1, T + barH + 14, sp[0], {
+          anchor: i === 0 ? "start" : (i === SPECIES.length - 1 ? "end" : "middle"),
+          size:10, fill: sp[2] ? C.accent : C.grey, weight: sp[2] ? 600 : 400 });
+      } else {
+        small.push(sp[0] + " " + sp[1] + "%");
+      }
+      acc += w;
+    });
+    // bands too narrow to label sit in a run-on line beneath
+    txt(s, 0, T + barH + 38, "Not labelled above: " + small.join("  ·  "), { size:10, fill:C.grey });
+    el(s, "line", { x1:W * 0.10, y1:T - 6, x2:W * 0.10, y2:T + barH + 4,
+      stroke:C.alt, "stroke-width":1.6, "stroke-dasharray":"4 3" });
+    mount("c4", s, "Stacked bar of species composition. Ash is the largest band at 18 per cent, well above the council\u2019s 10 per cent diversity standard.");
+  })();
+
+  /* ---------- Fig 6 · cohorts ---------- */
+  (function(){
+    var W = 640, H = 250, L = 46, R = 46, T = 24, B = 38;
+    var s = svg(W, H);
+    var bw = (W - L - R) / COHORTS.length;
+    var yn = function(v){ return T + (3400 - v) / 3400 * (H - T - B); };
+    var ys = function(v){ return T + (80 - v) / 80 * (H - T - B); };
+    [0,1000,2000,3000].forEach(function(v){
+      el(s, "line", { x1:L, y1:yn(v), x2:W - R, y2:yn(v), stroke:C.rule });
+      txt(s, L - 8, yn(v), v ? (v / 1000) + "k" : "0", { anchor:"end", size:10 });
+    });
+    [0,40,80].forEach(function(v){ txt(s, W - R + 8, ys(v), v + "%", { size:10, fill:C.alt }); });
+    COHORTS.forEach(function(c, i){
+      var cx = L + i * bw + bw / 2;
+      var w = Math.min(52, bw * 0.5);
+      el(s, "rect", { x:cx - w / 2, y:yn(c.n), width:w, height:yn(0) - yn(c.n),
+        fill:c.prov ? "none" : C.ink, opacity:c.prov ? 1 : .3,
+        stroke:c.prov ? C.ink : "none", "stroke-width":1.4, "stroke-dasharray":c.prov ? "4 3" : null });
+      txt(s, cx, yn(c.n) - 9, c.n.toLocaleString(), { anchor:"middle", size:10, fill:C.ink, weight:600 });
+      txt(s, cx, H - B + 15, String(c.y), { anchor:"middle", size:10.5, fill:C.ink });
+    });
+    var path = COHORTS.map(function(c, i){
+      return (i ? "L" : "M") + (L + i * bw + bw / 2) + " " + ys(c.s);
+    }).join(" ");
+    el(s, "path", { d:path, fill:"none", stroke:C.accent, "stroke-width":2.4 });
+    COHORTS.forEach(function(c, i){
+      var cx = L + i * bw + bw / 2;
+      el(s, "circle", { cx:cx, cy:ys(c.s), r:4.5, fill:c.prov ? "var(--panel)" : C.accent,
+        stroke:C.accent, "stroke-width":2 });
+      txt(s, cx, ys(c.s) - 13, c.s + "%", { anchor:"middle", size:10, fill:C.accent, weight:600 });
+    });
+    txt(s, L, T - 8, "TREES PLANTED", { size:9.5, ls:"0.12em", weight:600, fill:C.grey });
+    txt(s, W - R, T - 8, "5-YEAR SURVIVAL", { size:9.5, ls:"0.12em", weight:600, fill:C.accent, anchor:"end" });
+    mount("c5", s, "Bars of trees planted rising each cohort while the survival line falls from 71 to 48 per cent.");
+  })();
+
+  /* ---------- notes, with return links ---------- */
+  var NOTES = [
+    "Calderwick canopy survey, spring 2025. Cover is the vertical projection of tree crowns over total land area, all ownerships.",
+    "Ash dieback (Hymenoscyphus fraxineus) was first confirmed in Calderwick stock in 2016 and recorded in every ward by 2021.",
+    "Ground validation used 480 stratified random points, 40 per hectare band, walked between 4 and 19 July 2025.",
+    "2009 ward figures are apportioned to 2019 boundaries by area weighting. See Appendix A, 'Boundary change'.",
+    "Gap measured between the mean of decile 1–2 wards and decile 9–10 wards; 20.4 points in 2009, 22.7 in 2025.",
+    "Index of Multiple Deprivation 2023, ward-level population-weighted rank, decile within this local authority rather than nationally.",
+    "Land surface temperature, not air temperature. Eight cloud-free passes across July 2024 and July 2025, mean of daytime overpasses.",
+    "Crown decline assessed on the standard four-class scale; classes 3 and 4 counted as declining.",
+    "Planting records for the 2016 cohort were lost in the 2018 system migration and that cohort is excluded throughout."
+  ];
+  document.getElementById("notes").innerHTML = NOTES.map(function(t, i){
+    var n = i + 1;
+    return '<li id="fn' + n + '">' + t + ' <a class="back" href="#fnref' + n + '" aria-label="Back to reference ' + n + ' in the text">↩</a></li>';
+  }).join("");
+
+  /* ---------- contents + scroll spy ---------- */
+  var secs = Array.prototype.slice.call(document.querySelectorAll("article section"));
+  document.getElementById("toc").innerHTML = secs.map(function(s){
+    var h = s.querySelector("h2.sec");
+    var label = h.childNodes[h.childNodes.length - 1].textContent.trim();
+    return '<li><a href="#' + s.id + '">' + label + "</a></li>";
+  }).join("");
+  var links = Array.prototype.slice.call(document.querySelectorAll("nav.toc a"));
+  if ("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (!e.isIntersecting) return;
+        links.forEach(function(a){ a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id); });
+      });
+    }, { rootMargin: "-10% 0px -70% 0px" });
+    secs.forEach(function(s){ io.observe(s); });
+  }
+})();
+</script>
+</body>
+</html>

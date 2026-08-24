@@ -1,0 +1,43 @@
+title: Incident Severity Wizard
+summary: Six questions that resolve to a severity level, the people it justifies paging,
+  and a channel message already written.
+tier: source
+
+use_case: [internal-ops]
+style: wizard
+topics: [reliability, on-call, incident-response]
+techniques: [keyboard-nav]
+design: terminal
+
+source: artifact.html
+
+prompt: |
+  A six-question incident severity wizard as one self-contained HTML file, built
+  for 3 a.m.
+
+  Ask about user impact, whether the paying path works, data integrity, whether
+  an affected user has a workaround, blast radius, and trajectory. Resolve to
+  SEV1 through SEV4 using an explicit rule ladder rather than a point score, and
+  show every rule that fired, so the call is auditable in the morning. Active
+  data loss overrides everything. A worsening trend escalates one level.
+
+  Output the severity, a page list with timing per role, and a pre-filled
+  incident channel opener with a copy button, including a field for the
+  one-line user-facing description that flows into the message.
+
+  Fully keyboard-driven: number keys answer, backspace goes back, R restarts,
+  C copies. Show a scrollback of answered questions above the current one.
+
+  Phosphor terminal treatment — monospace throughout, green on near-black, a
+  status line pinned to the bottom, a blinking block cursor. Deliberately
+  single-theme: paint every colour so it reads identically on any host. No
+  network, no libraries.
+customize:
+  - Rewrite the SEV table's page lists for your own rota and escalation policy.
+  - Adjust the rules in classify() — most teams disagree about the SEV2/SEV3 line.
+  - Change the update cadences to whatever your incident policy actually promises.
+  - Ask Claude to add a seventh question about regulatory or customer-commitment exposure.
+technical: false
+
+author: { name: zoltlabs, github: zoltlabs }
+license: MIT

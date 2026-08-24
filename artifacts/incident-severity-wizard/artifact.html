@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Incident Severity Wizard</title>
+<style>
+/* A deliberately single-theme artifact: the phosphor terminal is the treatment, so
+   every colour is painted explicitly and the page reads identically on any host. */
+:root{
+  --bg:#0B0E0C; --panel:#0E1310; --dim:#1E5C3A; --dimmer:#15311F;
+  --ink:#C8F5DA; --ink-2:#7FB99A; --phos:#35E07E; --amber:#E8B33A; --red:#FF6B5A;
+}
+*{box-sizing:border-box}
+html,body{margin:0; background:#0B0E0C}
+body{
+  background:var(--bg); color:var(--ink); min-height:100vh;
+  font-family:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  font-size:14px; line-height:1.62; padding:0 0 54px;
+  -webkit-font-smoothing:antialiased;
+}
+.screen{max-width:78ch; margin:0 auto; padding:26px 18px 0}
+a{color:var(--phos)}
+:focus-visible{outline:2px solid var(--phos); outline-offset:2px}
+
+/* ---- masthead ---- */
+.head{border-bottom:1px solid var(--dim); padding-bottom:12px}
+.head .rule{color:var(--dim); white-space:nowrap; overflow:hidden; font-size:13px; letter-spacing:-.5px}
+h1{margin:6px 0 4px; font-size:clamp(17px,4.2vw,22px); font-weight:500; color:var(--phos); letter-spacing:.02em}
+h1::before{content:"$ "; color:var(--dim)}
+.head p{margin:6px 0 0; color:var(--ink-2); font-size:13px; max-width:66ch}
+
+/* ---- scrollback ---- */
+.log{margin:16px 0 0; min-height:0}
+.log div{color:var(--ink-2); font-size:13px}
+.log div b{color:var(--phos); font-weight:400}
+.log div .q{color:var(--dim)}
+
+/* ---- question ---- */
+.step{margin-top:18px; border:1px solid var(--dim); background:var(--panel); position:relative}
+.step > .tag{
+  position:absolute; top:-8px; left:12px; background:var(--panel); padding:0 7px;
+  font-size:11px; letter-spacing:.14em; color:var(--phos);
+}
+.step > .prog{position:absolute; top:-8px; right:12px; background:var(--panel); padding:0 7px; font-size:11px; color:var(--dim); letter-spacing:.1em}
+.step .inner{padding:18px 16px 14px}
+h2{margin:0 0 3px; font-size:15.5px; font-weight:500; color:var(--ink); letter-spacing:.01em}
+.why{margin:0 0 14px; color:var(--ink-2); font-size:12.5px}
+.opts{display:flex; flex-direction:column; gap:2px}
+.opt{
+  display:flex; gap:11px; align-items:flex-start; width:100%; text-align:left;
+  background:transparent; border:1px solid transparent; color:var(--ink);
+  font:inherit; padding:7px 9px; cursor:pointer; border-radius:0;
+}
+.opt:hover,.opt.on{border-color:var(--dim); background:#101a14}
+.opt .k{color:var(--phos); flex:0 0 auto}
+.opt .lab{flex:1}
+.opt .lab em{display:block; font-style:normal; color:var(--ink-2); font-size:12.5px; margin-top:1px}
+.opt.on .k{background:var(--phos); color:var(--bg); padding:0 3px}
+
+/* ---- result ---- */
+.verdict{margin-top:18px; border:1px solid var(--sev,var(--phos)); background:var(--panel)}
+.verdict .bar{background:var(--sev); color:var(--bg); padding:9px 14px; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap}
+.verdict .bar b{font-size:22px; letter-spacing:.06em}
+.verdict .bar span{font-size:12.5px; opacity:.86}
+.verdict .bar .rt{margin-left:auto; font-size:11.5px; letter-spacing:.1em}
+.vbody{padding:14px 16px 16px}
+h3{margin:0 0 7px; font-size:11.5px; letter-spacing:.15em; color:var(--dim); font-weight:400; text-transform:uppercase}
+.because{margin:0 0 16px; padding:0; list-style:none}
+.because li{padding:2px 0 2px 16px; position:relative; font-size:13px; color:var(--ink)}
+.because li::before{content:"→"; position:absolute; left:0; color:var(--sev)}
+.because li em{font-style:normal; color:var(--ink-2)}
+.page{margin:0 0 16px; padding:0; list-style:none; border-top:1px solid var(--dimmer)}
+.page li{display:flex; gap:12px; padding:6px 0; border-bottom:1px solid var(--dimmer); font-size:13px; align-items:baseline}
+.page li .role{flex:1}
+.page li .when{color:var(--amber); font-size:12px; white-space:nowrap}
+.page li .when.now{color:var(--red)}
+label.sum{display:block; font-size:11.5px; letter-spacing:.14em; color:var(--dim); text-transform:uppercase; margin-bottom:5px}
+input[type=text]{
+  width:100%; background:#0A0F0C; border:1px solid var(--dim); color:var(--ink);
+  font:inherit; font-size:13px; padding:8px 10px; border-radius:0;
+}
+input[type=text]::placeholder{color:#3F6B55}
+pre{
+  margin:12px 0 0; padding:13px 14px; background:#080B09; border:1px solid var(--dimmer);
+  color:var(--ink); font-size:12.5px; line-height:1.65; white-space:pre-wrap; overflow-x:auto;
+}
+.row{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px}
+button.cmd{
+  background:transparent; border:1px solid var(--dim); color:var(--ink); font:inherit;
+  font-size:12px; padding:7px 13px; cursor:pointer; letter-spacing:.06em; border-radius:0;
+}
+button.cmd:hover{background:var(--dim); color:var(--bg)}
+button.cmd.on{border-color:var(--phos); color:var(--phos)}
+button.cmd.on:hover{background:var(--phos); color:var(--bg)}
+
+/* ---- status line ---- */
+.status{
+  position:fixed; left:0; right:0; bottom:0; background:#080B09; border-top:1px solid var(--dim);
+  font-size:11.5px; color:var(--ink-2); padding:7px 16px; display:flex; gap:16px; flex-wrap:wrap;
+}
+.status b{color:var(--phos); font-weight:400}
+.status .right{margin-left:auto; color:var(--dim)}
+.cursor{display:inline-block; width:8px; height:14px; background:var(--phos); vertical-align:-2px; animation:blink 1.05s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.cursor{animation:none}}
+@media (max-width:520px){.status{font-size:10.5px; gap:10px} .status .right{display:none}}
+</style>
+</head>
+<body>
+<div class="screen">
+
+<header class="head">
+  <div class="rule" aria-hidden="true">────────────────────────────────────────────────────────────────────────────────</div>
+  <h1>severity --interactive</h1>
+  <p>Six questions. You get a severity, the list of people it justifies waking, and the
+  channel message already written. Built for 03:00, when a table on a wiki page is the
+  wrong interface.</p>
+</header>
+
+<div class="log" id="log" aria-live="polite"></div>
+
+<section class="step" id="step">
+  <span class="tag" id="tag">QUESTION</span>
+  <span class="prog" id="prog">1/6</span>
+  <div class="inner">
+    <h2 id="q">…</h2>
+    <p class="why" id="why"></p>
+    <div class="opts" id="opts" role="listbox" aria-label="Answer options"></div>
+  </div>
+</section>
+
+<div id="out"></div>
+
+</div>
+
+<div class="status">
+  <span><b>1–5</b> answer</span>
+  <span><b>← ⌫</b> back</span>
+  <span><b>R</b> restart</span>
+  <span id="ctxKey"></span>
+  <span class="right" id="stat">awaiting input<span class="cursor"></span></span>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* Ordered scales — index is severity weight, so comparisons read like the runbook. */
+  var Q = [
+    { id:"impact", tag:"USER IMPACT",
+      q:"How many people are affected right now?",
+      why:"Count who is blocked, not who could theoretically be.",
+      opts:[
+        ["Nobody yet","Internal only, or caught before release","none"],
+        ["A handful","A few reports, one account or region","few"],
+        ["Some","A visible slice — one plan tier, one country","some"],
+        ["Many","A large fraction of active users","many"],
+        ["Everyone","The product is down","all"]
+      ]},
+    { id:"revenue", tag:"REVENUE PATH",
+      q:"Is the paying path working?",
+      why:"Checkout, payments, billing, renewals — the money, not the marketing site.",
+      opts:[
+        ["Unaffected","Money moves normally","fine"],
+        ["Degraded","Slow, retrying, or failing intermittently","degraded"],
+        ["Down","Nobody can pay you","down"]
+      ]},
+    { id:"data", tag:"DATA INTEGRITY",
+      q:"Is data being lost or corrupted?",
+      why:"The one answer that overrides everything else on this page.",
+      opts:[
+        ["No","Reads and writes are intact","no"],
+        ["Possibly","Suspected, not yet confirmed either way","maybe"],
+        ["Yes, actively","Writes are being dropped or mangled right now","yes"]
+      ]},
+    { id:"workaround", tag:"WORKAROUND",
+      q:"Can an affected user get unblocked?",
+      why:"A workaround only counts if the user can reach it without you.",
+      opts:[
+        ["Yes, self-service","Retry, another route, an obvious alternative","self"],
+        ["Only with help","Support can do it manually, one case at a time","manual"],
+        ["No","They wait until it is fixed","none"]
+      ]},
+    { id:"blast", tag:"BLAST RADIUS",
+      q:"How far does it reach?",
+      why:"Independent failures are one incident. Shared dependencies are another thing.",
+      opts:[
+        ["One service","Contained, and you know where","one"],
+        ["Several services","A shared dependency is implicated","several"],
+        ["Whole region or platform","Infrastructure, not application","platform"]
+      ]},
+    { id:"trend", tag:"TRAJECTORY",
+      q:"Which way is it going?",
+      why:"Severity is about the next hour, not the last one.",
+      opts:[
+        ["Recovering","Error rate falling without intervention","better"],
+        ["Stable","Bad, but not spreading","flat"],
+        ["Getting worse","Still climbing, or the cause is unknown","worse"]
+      ]}
+  ];
+
+  var ORDER = {
+    impact:["none","few","some","many","all"],
+    revenue:["fine","degraded","down"],
+    data:["no","maybe","yes"],
+    workaround:["self","manual","none"],
+    blast:["one","several","platform"],
+    trend:["better","flat","worse"]
+  };
+  var rank = function(k, v){ return ORDER[k].indexOf(v); };
+
+  var SEV = {
+    1:{ name:"SEV1", colour:"#FF6B5A", line:"Wake people up. Now.",
+        page:[["Incident commander","page now"],["On-call for the affected service","page now"],
+              ["Communications lead","page now"],["Executive on-call","page now"],
+              ["Support lead","notify within 15m"]],
+        cadence:"15 minutes" },
+    2:{ name:"SEV2", colour:"#E8B33A", line:"Staff it properly, but nobody's night is ruined.",
+        page:[["Incident commander","page now"],["On-call for the affected service","page now"],
+              ["Communications lead","standby"],["Support lead","notify within 30m"]],
+        cadence:"30 minutes" },
+    3:{ name:"SEV3", colour:"#35E07E", line:"Handle it in hours. Keep the thread honest.",
+        page:[["On-call for the affected service","page now"],["Team channel","notify"],
+              ["Support lead","notify next working hour"]],
+        cadence:"2 hours" },
+    4:{ name:"SEV4", colour:"#7FB99A", line:"A ticket. Not an incident.",
+        page:[["Owning team","ticket, business hours"]],
+        cadence:"next working day" }
+  };
+
+  /* --- the ladder. Every rule that fires is shown, so the call is auditable. --- */
+  function classify(a){
+    var fired = [], sev = 4;
+    var hit = function(level, text, detail){
+      fired.push({ level:level, text:text, detail:detail });
+      if (level < sev) sev = level;
+    };
+
+    if (a.data === "yes")
+      hit(1, "Data is being lost or corrupted right now.", "Overrides every other answer — an outage is recoverable, a silent write is not.");
+    if (a.revenue === "down" && rank("impact", a.impact) >= 3)
+      hit(1, "The paying path is down for many users.", "Revenue interruption at scale.");
+    if (a.impact === "all" && a.workaround === "none")
+      hit(1, "Everyone is affected and nobody can get around it.", "Total loss of service.");
+
+    if (a.data === "maybe")
+      hit(2, "Data integrity is in question.", "Suspected corruption is treated as SEV2 until it is ruled out, not after.");
+    if (a.revenue === "degraded" && rank("impact", a.impact) >= 2)
+      hit(2, "The paying path is degraded for a visible share of users.", "Money is failing intermittently.");
+    if (rank("impact", a.impact) >= 3 && a.workaround === "none")
+      hit(2, "Many users are affected with no workaround.", "");
+    if (a.blast === "platform")
+      hit(2, "A region or platform component is implicated.", "Blast radius is infrastructure-wide.");
+
+    if (rank("impact", a.impact) >= 2)
+      hit(3, "A visible slice of users is affected.", "");
+    if (a.workaround === "manual")
+      hit(3, "The only workaround needs a human in the loop.", "Support cost scales with the outage.");
+    if (a.blast === "several")
+      hit(3, "More than one service is involved.", "Suggests a shared dependency.");
+    if (a.revenue === "degraded")
+      hit(3, "The paying path is degraded.", "");
+
+    if (!fired.length)
+      fired.push({ level:4, text:"Nothing above the SEV3 line fired.", detail:"Contained, worked around, and not spreading." });
+
+    var adjust = null;
+    if (a.trend === "worse" && sev > 1){
+      sev -= 1;
+      adjust = { dir:"up", text:"Escalated one level: it is still getting worse.", detail:"Severity describes the next hour. Downgrade later if it holds." };
+    } else if (a.trend === "better" && sev === 3 && a.data === "no" && a.revenue === "fine"){
+      sev = 4;
+      adjust = { dir:"down", text:"Held at SEV4: recovering on its own, no data or revenue exposure.", detail:"Re-raise if it stalls." };
+    }
+    return { sev:sev, fired:fired, adjust:adjust };
+  }
+
+  /* ---------------- state ---------------- */
+  var i = 0, answers = {}, done = false, summary = "";
+
+  function drawLog(){
+    $("log").innerHTML = Q.slice(0, i).map(function(q){
+      var v = answers[q.id];
+      var opt = q.opts.filter(function(o){ return o[2] === v; })[0];
+      return '<div><span class="q">' + q.tag.toLowerCase().replace(/ /g, "_") +
+             ': </span><b>' + (opt ? opt[0].toLowerCase() : v) + "</b></div>";
+    }).join("");
+  }
+
+  function drawStep(){
+    var q = Q[i];
+    $("step").style.display = "";
+    $("out").innerHTML = "";
+    $("tag").textContent = q.tag;
+    $("prog").textContent = (i + 1) + "/" + Q.length;
+    $("q").textContent = q.q;
+    $("why").textContent = q.why;
+    $("opts").innerHTML = q.opts.map(function(o, k){
+      var on = answers[q.id] === o[2];
+      return '<button class="opt' + (on ? " on" : "") + '" data-v="' + o[2] + '" role="option" aria-selected="' + on + '">' +
+        '<span class="k">[' + (k + 1) + ']</span>' +
+        '<span class="lab">' + o[0] + "<em>" + o[1] + "</em></span></button>";
+    }).join("");
+    Array.prototype.forEach.call($("opts").children, function(b){
+      b.addEventListener("click", function(){ answer(b.dataset.v); });
+    });
+    $("stat").innerHTML = "question " + (i + 1) + " of " + Q.length + '<span class="cursor"></span>';
+    $("ctxKey").innerHTML = "";
+    drawLog();
+  }
+
+  function answer(v){
+    answers[Q[i].id] = v;
+    if (i < Q.length - 1){ i++; drawStep(); }
+    else { i = Q.length; done = true; drawResult(); }
+  }
+
+  function back(){
+    if (done){ done = false; i = Q.length - 1; drawStep(); return; }
+    if (i > 0){ i--; drawStep(); }
+  }
+
+  function message(r){
+    var s = SEV[r.sev];
+    var impact = Q[0].opts.filter(function(o){ return o[2] === answers.impact; })[0][0];
+    var work = { self:"yes, self-service", manual:"manual, support-assisted", none:"none" }[answers.workaround];
+    var rev = { fine:"unaffected", degraded:"degraded", down:"down" }[answers.revenue];
+    return [
+      s.name + " — " + (summary || "<one line: what is broken, in user terms>"),
+      "",
+      "Impact:      " + impact + " · paying path " + rev,
+      "Data:        " + ({ no:"no integrity concern", maybe:"integrity UNCONFIRMED — treat as suspect", yes:"ACTIVE LOSS OR CORRUPTION" })[answers.data],
+      "Workaround:  " + work,
+      "Radius:      " + ({ one:"one service", several:"several services", platform:"region / platform" })[answers.blast],
+      "Trend:       " + ({ better:"recovering", flat:"stable", worse:"still worsening" })[answers.trend],
+      "",
+      "IC:          <name>",
+      "Comms:       <name or 'not needed'>",
+      "Next update: " + s.cadence + ", in this thread",
+      "",
+      "Severity assigned by rule: " + r.fired.filter(function(f){ return f.level === r.sev || f.level < 4; })
+        .slice(0, 2).map(function(f){ return f.text.replace(/\.$/, ""); }).join("; ") + "."
+    ].join("\n");
+  }
+
+  function drawResult(){
+    var r = classify(answers), s = SEV[r.sev];
+    $("step").style.display = "none";
+    drawLog();
+
+    var pageRows = s.page.map(function(p){
+      var now = /now/.test(p[1]);
+      return '<li><span class="role">' + p[0] + '</span><span class="when' + (now ? " now" : "") + '">' + p[1] + "</span></li>";
+    }).join("");
+
+    var because = r.fired
+      .slice().sort(function(a, b){ return a.level - b.level; })
+      .map(function(f){
+        return "<li>" + f.text + (f.detail ? " <em>" + f.detail + "</em>" : "") + "</li>";
+      }).join("") + (r.adjust ? "<li>" + r.adjust.text + " <em>" + r.adjust.detail + "</em></li>" : "");
+
+    $("out").innerHTML =
+      '<section class="verdict" style="--sev:' + s.colour + '">' +
+        '<div class="bar"><b>' + s.name + "</b><span>" + s.line + '</span><span class="rt">UPDATE EVERY ' + s.cadence.toUpperCase() + "</span></div>" +
+        '<div class="vbody">' +
+          "<h3>Because</h3><ul class=\"because\">" + because + "</ul>" +
+          "<h3>Page</h3><ul class=\"page\">" + pageRows + "</ul>" +
+          '<label class="sum" for="sumIn">One line: what is broken, in user terms</label>' +
+          '<input type="text" id="sumIn" maxlength="120" placeholder="checkout fails for card payments in the EU" value="' +
+            summary.replace(/"/g, "&quot;") + '">' +
+          "<pre id=\"msg\"></pre>" +
+          '<div class="row">' +
+            '<button class="cmd on" id="copy">[C] copy channel message</button>' +
+            '<button class="cmd" id="again">[R] start over</button>' +
+            '<button class="cmd" id="edit">[←] change last answer</button>' +
+          "</div>" +
+        "</div></section>";
+
+    var render = function(){ $("msg").textContent = message(r); };
+    render();
+    $("sumIn").addEventListener("input", function(){ summary = this.value; render(); });
+    $("copy").addEventListener("click", function(){ copyMsg(this); });
+    $("again").addEventListener("click", restart);
+    $("edit").addEventListener("click", back);
+    $("stat").innerHTML = s.name + " assigned<span class=\"cursor\"></span>";
+    $("ctxKey").innerHTML = "<b>C</b> copy";
+  }
+
+  function copyMsg(btn){
+    var txt = $("msg").textContent;
+    var ok = function(){ btn.textContent = "[C] copied"; setTimeout(function(){ btn.textContent = "[C] copy channel message"; }, 1600); };
+    var fallback = function(){
+      var r = document.createRange(); r.selectNodeContents($("msg"));
+      var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r);
+      btn.textContent = "[C] press ⌘C";
+      setTimeout(function(){ btn.textContent = "[C] copy channel message"; }, 2400);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, fallback);
+    else fallback();
+  }
+
+  function restart(){ i = 0; answers = {}; done = false; summary = ""; drawStep(); }
+
+  document.addEventListener("keydown", function(e){
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    var typing = document.activeElement && document.activeElement.tagName === "INPUT";
+    if (e.key === "Backspace" && !typing){ e.preventDefault(); back(); return; }
+    if (e.key === "ArrowLeft" && !typing){ e.preventDefault(); back(); return; }
+    if (typing) return;
+    if (e.key === "r" || e.key === "R"){ e.preventDefault(); restart(); return; }
+    if (done && (e.key === "c" || e.key === "C")){ e.preventDefault(); copyMsg($("copy")); return; }
+    if (!done && /^[1-9]$/.test(e.key)){
+      var k = +e.key - 1, q = Q[i];
+      if (q.opts[k]){ e.preventDefault(); answer(q.opts[k][2]); }
+    }
+  });
+
+  drawStep();
+})();
+</script>
+</body>
+</html>

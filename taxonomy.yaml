@@ -55,6 +55,24 @@ techniques:
   - no-js
   - single-file-react
 
+# Visual treatment. Secondary navigation, like `techniques` — one per entry.
+# A gallery is browsed as a wall of thumbnails, and neither `use_case` nor `style`
+# predicts what a thumbnail looks like. See docs/design-treatments.md for the recipes.
+# `swatch` is [ground, ink, accent] and is what the site renders as the chip.
+design:
+  swiss:      { label: "Swiss grid",        swatch: ["#FFFFFF", "#111111", "#E1140A"], blurb: "Modular grid, one grotesque, one signal colour, ruthless white space." }
+  blueprint:  { label: "Technical drawing", swatch: ["#0E2A47", "#E8F0F8", "#F2A33C"], blurb: "Graph-paper ground, dimension lines, monospace callouts." }
+  terminal:   { label: "Terminal",          swatch: ["#0B0E0C", "#C8F5DA", "#35E07E"], blurb: "Phosphor on black, monospace throughout, a status line." }
+  brutalist:  { label: "Brutalist web",     swatch: ["#FFFFFF", "#000000", "#FF4D00"], blurb: "Hard borders, no radius, oversized type, deliberate rawness." }
+  clinical:   { label: "Soft clinical",     swatch: ["#F7F9FB", "#1D2A32", "#2E7D8F"], blurb: "Pale ground, rounded cards, muted semantic colour, high legibility." }
+  riso:       { label: "Risograph",         swatch: ["#F5F0E4", "#1A1A1A", "#FF4A3D"], blurb: "Two spot inks overprinting, grain, cheerful misregistration." }
+  deco:       { label: "Deco poster",       swatch: ["#10182B", "#EFE7D6", "#C8A24A"], blurb: "Symmetry, gold on ink, high-contrast geometric display type." }
+  archival:   { label: "Archival",          swatch: ["#FBF8F1", "#232019", "#8C5A2B"], blurb: "Oldstyle serif and figures, marginalia, footnote culture." }
+  dense:      { label: "Data terminal",     swatch: ["#12151A", "#D6DCE5", "#4ED88A"], blurb: "Tight rows, tabular numerals, density as the aesthetic." }
+  toybox:     { label: "Toybox",            swatch: ["#FFF6E5", "#211C1B", "#FF5C39"], blurb: "Saturated primaries, thick strokes, hard offset shadows, spring motion." }
+  field:      { label: "Field guide",       swatch: ["#F3F1E7", "#2B3327", "#6E8B5C"], blurb: "Specimen plates, ink linework, italic Latin, ruled margin." }
+  boardroom:  { label: "Boardroom",         swatch: ["#FFFFFF", "#0E1A2B", "#1B6E8C"], blurb: "The good version of the business document. Restrained, print-safe." }
+
 tier:
   source: "Full artifact source committed. CI renders the thumbnail. Remixable."
   linked: "claude.ai share URL plus a submitter screenshot, normalised by CI."

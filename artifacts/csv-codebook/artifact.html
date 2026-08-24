@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paste a CSV, Get a Codebook</title>
+<style>
+:root{
+  --bg:#FFFFFF; --ink:#000000; --fill:#EDEDED; --accent:#FF4D00;
+  --muted:#5B5B5B; --line:#000000; --bar:#000000; --ok:#0A6B2E; --bad:#B01000;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#000000; --ink:#FFFFFF; --fill:#171717; --accent:#FF6A2B;
+    --muted:#A5A5A5; --line:#FFFFFF; --bar:#FFFFFF; --ok:#4FD07C; --bad:#FF7A6B;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#000000; --ink:#FFFFFF; --fill:#171717; --accent:#FF6A2B;
+  --muted:#A5A5A5; --line:#FFFFFF; --bar:#FFFFFF; --ok:#4FD07C; --bad:#FF7A6B;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:ui-sans-serif, system-ui, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size:15px; line-height:1.5;
+}
+.mono,code,td.n,th.n{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace}
+.wrap{max-width:1180px; margin:0 auto; padding:0 16px 80px}
+
+h1{
+  font-family:Times, "Times New Roman", Georgia, serif;
+  font-size:clamp(38px,9vw,86px); line-height:.94; letter-spacing:-.02em;
+  margin:26px 0 0; font-weight:700; text-transform:uppercase;
+}
+h1 span{display:block; color:var(--accent)}
+.sub{
+  border-top:4px solid var(--line); border-bottom:4px solid var(--line);
+  margin:18px 0 0; padding:10px 0; font-size:16px; max-width:70ch;
+}
+.sub b{background:var(--accent); color:#FFF; padding:0 5px}
+
+h2{
+  font-family:Times,"Times New Roman",Georgia,serif; text-transform:uppercase;
+  font-size:22px; margin:34px 0 0; padding:6px 0; border-bottom:2px solid var(--line);
+  display:flex; align-items:baseline; gap:12px; letter-spacing:.01em;
+}
+h2 em{font-style:normal; font-family:ui-monospace,Menlo,monospace; font-size:11px; color:var(--muted); margin-left:auto; letter-spacing:.1em}
+
+/* ---- intake ---- */
+.intake{border:2px solid var(--line); margin-top:14px; display:grid; grid-template-columns:1fr auto}
+@media (max-width:700px){.intake{grid-template-columns:1fr}}
+.drop{padding:18px; border-right:2px solid var(--line)}
+@media (max-width:700px){.drop{border-right:0; border-bottom:2px solid var(--line)}}
+.drop.hot{background:var(--accent); color:#FFF}
+.drop.hot .mono{color:#FFF}
+.drop p{margin:0 0 10px; font-size:14px}
+textarea{
+  width:100%; min-height:74px; border:2px solid var(--line); background:var(--bg); color:var(--ink);
+  font-family:ui-monospace,Menlo,monospace; font-size:12px; padding:8px; border-radius:0; resize:vertical;
+}
+.acts{display:flex; flex-direction:column}
+button,.filebtn{
+  font-family:ui-monospace,Menlo,monospace; font-size:12px; text-transform:uppercase; letter-spacing:.08em;
+  border:0; border-bottom:2px solid var(--line); background:var(--bg); color:var(--ink);
+  padding:13px 20px; cursor:pointer; text-align:left; border-radius:0; display:block; width:100%;
+}
+.acts > *:last-child{border-bottom:0}
+button:hover,.filebtn:hover{background:var(--ink); color:var(--bg)}
+button.go{background:var(--accent); color:#FFF; font-weight:700}
+button.go:hover{background:var(--ink); color:var(--bg)}
+input[type=file]{position:absolute; width:1px; height:1px; opacity:0; pointer-events:none}
+:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+
+.banner{border:2px solid var(--line); border-top:0; padding:9px 14px; font-family:ui-monospace,Menlo,monospace; font-size:12px; background:var(--fill)}
+.banner b{color:var(--accent)}
+
+/* ---- overview ---- */
+.stats{display:grid; grid-template-columns:repeat(auto-fit,minmax(118px,1fr)); border:2px solid var(--line); border-top:0}
+.stat{padding:10px 14px 12px; border-right:2px solid var(--line)}
+.stat:last-child{border-right:0}
+.stat dt{font-family:ui-monospace,Menlo,monospace; font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted)}
+.stat dd{margin:3px 0 0; font-family:ui-monospace,Menlo,monospace; font-size:24px; font-variant-numeric:tabular-nums; line-height:1}
+
+/* ---- flags ---- */
+ul.flags{list-style:none; margin:14px 0 0; padding:0; border-top:2px solid var(--line)}
+ul.flags li{display:flex; gap:12px; padding:9px 0; border-bottom:1px solid var(--line); align-items:baseline}
+ul.flags .k{
+  flex:0 0 auto; font-family:ui-monospace,Menlo,monospace; font-size:10px; text-transform:uppercase;
+  letter-spacing:.08em; padding:2px 7px; border:2px solid var(--line);
+}
+ul.flags .k.hi{background:var(--accent); color:#FFF; border-color:var(--accent)}
+ul.flags .k.good{border-color:var(--ok); color:var(--ok)}
+ul.flags .t{flex:1; font-size:14.5px}
+ul.flags .t code{background:var(--fill); padding:1px 4px}
+
+/* ---- column table ---- */
+.scroll{overflow-x:auto; border:2px solid var(--line); border-top:0}
+table{border-collapse:collapse; width:100%; min-width:840px; font-size:13.5px}
+th,td{border:1px solid var(--line); padding:7px 9px; text-align:left; vertical-align:top}
+thead th{
+  font-family:ui-monospace,Menlo,monospace; font-size:10px; text-transform:uppercase;
+  letter-spacing:.09em; background:var(--fill); white-space:nowrap;
+}
+td.n,th.n{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+tbody tr:hover{background:var(--fill)}
+.name{font-family:ui-monospace,Menlo,monospace; font-weight:700}
+.type{font-family:ui-monospace,Menlo,monospace; font-size:11px; text-transform:uppercase; letter-spacing:.06em}
+.miss{display:inline-block; min-width:44px}
+.miss.hi{background:var(--accent); color:#FFF; padding:0 4px}
+.spark{display:block}
+.dist{font-size:12px; line-height:1.45}
+.dist b{font-family:ui-monospace,Menlo,monospace; font-weight:400}
+.dist span{color:var(--muted)}
+.tagrow{margin-top:4px; display:flex; gap:4px; flex-wrap:wrap}
+.tg{font-family:ui-monospace,Menlo,monospace; font-size:9.5px; text-transform:uppercase; letter-spacing:.06em; border:1px solid var(--line); padding:1px 4px}
+.tg.hi{background:var(--accent); color:#FFF; border-color:var(--accent)}
+
+/* ---- dictionary ---- */
+.dict{border:2px solid var(--line); border-top:0}
+.dict .head{display:flex; border-bottom:2px solid var(--line)}
+.dict .head span{padding:10px 14px; font-family:ui-monospace,Menlo,monospace; font-size:11px; text-transform:uppercase; letter-spacing:.09em}
+.dict .head button{width:auto; border-bottom:0; border-left:2px solid var(--line); margin-left:auto}
+pre{
+  margin:0; padding:14px; overflow-x:auto; font-family:ui-monospace,Menlo,monospace;
+  font-size:11.5px; line-height:1.6; background:var(--bg); color:var(--ink);
+}
+footer{margin-top:36px; padding-top:12px; border-top:4px solid var(--line); font-family:ui-monospace,Menlo,monospace; font-size:11px; color:var(--muted); display:flex; gap:16px; flex-wrap:wrap}
+.err{border:2px solid var(--bad); color:var(--bad); padding:10px 14px; margin-top:14px; font-family:ui-monospace,Menlo,monospace; font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>Paste a CSV,<span>get a codebook.</span></h1>
+<p class="sub">Drop a file in and this reads every column: what type it really is, what fraction is
+missing, how the values are spread, which ones look like keys, and which look like mistakes. Then
+it writes the data dictionary for you. <b>Nothing leaves your browser.</b> There is no server here
+to send it to.</p>
+
+<div class="intake" id="drop">
+  <div class="drop" id="dropInner">
+    <p class="mono"><strong>Drop a .csv or .tsv anywhere on this page</strong> — or paste raw text below.</p>
+    <textarea id="paste" spellcheck="false" aria-label="Paste delimited text here"
+      placeholder="id,name,measured_on,value&#10;1,north basin,2026-03-11,18.4"></textarea>
+  </div>
+  <div class="acts">
+    <button class="go" id="readPaste">Read pasted text</button>
+    <label class="filebtn" for="file" tabindex="0" role="button">Choose a file…</label>
+    <input type="file" id="file" accept=".csv,.tsv,.txt,text/csv,text/plain">
+    <button id="sample">Load the sample</button>
+    <button id="clear">Clear</button>
+  </div>
+</div>
+
+<div class="banner" id="banner">Showing <b>sample data</b> — 42 dock inspections, deliberately messy. Drop your own file to replace it.</div>
+
+<div id="err"></div>
+
+<h2>Overview <em id="parsetime"></em></h2>
+<dl class="stats" id="stats"></dl>
+
+<h2>What's wrong with it <em>read these first</em></h2>
+<ul class="flags" id="flags"></ul>
+
+<h2>Columns <em id="coltime"></em></h2>
+<div class="scroll">
+  <table>
+    <thead><tr>
+      <th>Column</th><th>Inferred type</th><th class="n">Missing</th><th class="n">Distinct</th>
+      <th>Distribution</th><th>Summary</th>
+    </tr></thead>
+    <tbody id="cols"></tbody>
+  </table>
+</div>
+
+<h2>Data dictionary <em>paste into your methods section</em></h2>
+<div class="dict">
+  <div class="head"><span>Markdown</span><button id="copy">Copy</button></div>
+  <pre id="dict"></pre>
+</div>
+
+<footer>
+  <span>Local only — no upload, no network, no storage.</span>
+  <span id="perf"></span>
+</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+
+  /* =========================== parsing =========================== */
+  function sniff(text){
+    var line = text.slice(0, 4000).split(/\r?\n/)[0] || "";
+    var counts = { ",": 0, "\t": 0, ";": 0, "|": 0 }, q = false;
+    for (var i = 0; i < line.length; i++){
+      var ch = line[i];
+      if (ch === '"') q = !q;
+      else if (!q && counts[ch] !== undefined) counts[ch]++;
+    }
+    var best = ",", n = -1;
+    Object.keys(counts).forEach(function(k){ if (counts[k] > n){ n = counts[k]; best = k; } });
+    return n === 0 ? "," : best;
+  }
+
+  function parseDelimited(text, d){
+    var rows = [], row = [], cell = "", q = false, i = 0, n = text.length;
+    if (text.charCodeAt(0) === 0xFEFF) i = 1;              // strip BOM
+    for (; i < n; i++){
+      var ch = text[i];
+      if (q){
+        if (ch === '"'){
+          if (text[i + 1] === '"'){ cell += '"'; i++; }
+          else q = false;
+        } else cell += ch;
+      } else if (ch === '"'){ q = true; }
+      else if (ch === d){ row.push(cell); cell = ""; }
+      else if (ch === "\n"){ row.push(cell); rows.push(row); row = []; cell = ""; }
+      else if (ch === "\r"){ /* handled by \n */ }
+      else cell += ch;
+    }
+    if (cell.length || row.length){ row.push(cell); rows.push(row); }
+    return rows.filter(function(r){ return r.length > 1 || (r.length === 1 && r[0] !== ""); });
+  }
+
+  /* =========================== inference =========================== */
+  var BOOLS = { "true":1,"false":1,"yes":1,"no":1,"y":1,"n":1,"t":1,"f":1 };
+  var NUM_RE = /^-?(\d{1,3}(,\d{3})+|\d+)(\.\d+)?([eE][-+]?\d+)?$/;
+  var INT_RE = /^-?(\d{1,3}(,\d{3})+|\d+)$/;
+  var ISO_RE = /^\d{4}-\d{2}-\d{2}([ T]\d{2}:\d{2}(:\d{2})?)?/;
+  var SLASH_RE = /^(\d{1,4})[\/.](\d{1,2})[\/.](\d{1,4})$/;
+
+  function cleanNum(v){ return v.replace(/[,\s]/g, "").replace(/^[$£€]/, "").replace(/%$/, ""); }
+
+  function inferType(vals){
+    if (!vals.length) return "empty";
+    var n = vals.length, int = 0, num = 0, bool = 0, date = 0, cur = 0, pct = 0;
+    for (var i = 0; i < n; i++){
+      var v = vals[i], lv = v.toLowerCase();
+      if (BOOLS[lv]) bool++;
+      if (/^[$£€]/.test(v)) cur++;
+      if (/%$/.test(v)) pct++;
+      var c = cleanNum(v);
+      if (INT_RE.test(c)) int++;
+      if (NUM_RE.test(c)) num++;
+      if (ISO_RE.test(v) || SLASH_RE.test(v)) date++;
+    }
+    var f = function(x){ return x / n; };
+    if (f(bool) > .98 && new Set(vals.map(function(v){ return v.toLowerCase(); })).size <= 2) return "boolean";
+    if (f(date) > .95 && f(num) < .95) return "date";
+    if (f(int) > .98) return cur > 0 || pct > 0 ? "numeric" : "integer";
+    if (f(num) > .95) return "numeric";
+    return "text";
+  }
+
+  function quantile(sorted, p){
+    if (!sorted.length) return NaN;
+    var idx = (sorted.length - 1) * p, lo = Math.floor(idx), hi = Math.ceil(idx);
+    return lo === hi ? sorted[lo] : sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+  }
+
+  function parseDate(v){
+    if (ISO_RE.test(v)) return Date.parse(v.replace(" ", "T"));
+    var m = SLASH_RE.exec(v);
+    if (m){
+      var a = +m[1], b = +m[2], c = +m[3];
+      if (a > 31) return Date.parse(a + "-" + String(b).padStart(2,"0") + "-" + String(c).padStart(2,"0"));
+      // day-first vs month-first is genuinely ambiguous; assume day-first and flag it
+      return Date.parse(c + "-" + String(b).padStart(2,"0") + "-" + String(a).padStart(2,"0"));
+    }
+    return NaN;
+  }
+
+  function profile(name, raw){
+    var col = { name: name, raw: raw, n: raw.length };
+    var vals = [], blanks = 0;
+    for (var i = 0; i < raw.length; i++){
+      var v = (raw[i] === undefined || raw[i] === null) ? "" : String(raw[i]).trim();
+      if (v === "" || v === "NA" || v === "N/A" || v === "null" || v === "NULL" || v === "-") blanks++;
+      else vals.push(v);
+    }
+    col.missing = blanks;
+    col.missPct = raw.length ? blanks / raw.length : 0;
+    col.present = vals;
+    var uniq = new Map();
+    for (var j = 0; j < vals.length; j++) uniq.set(vals[j], (uniq.get(vals[j]) || 0) + 1);
+    col.distinct = uniq.size;
+    col.top = Array.from(uniq.entries()).sort(function(a, b){ return b[1] - a[1]; }).slice(0, 5);
+    col.type = inferType(vals);
+
+    if (col.type === "integer" || col.type === "numeric"){
+      var nums = vals.map(function(v){ return parseFloat(cleanNum(v)); }).filter(function(x){ return isFinite(x); });
+      nums.sort(function(a, b){ return a - b; });
+      col.nums = nums;
+      col.min = nums[0]; col.max = nums[nums.length - 1];
+      col.mean = nums.reduce(function(a, b){ return a + b; }, 0) / (nums.length || 1);
+      col.q1 = quantile(nums, .25); col.med = quantile(nums, .5); col.q3 = quantile(nums, .75);
+      var iqr = col.q3 - col.q1;
+      col.lo = col.q1 - 1.5 * iqr; col.hi = col.q3 + 1.5 * iqr;
+      col.outliers = iqr > 0 ? nums.filter(function(x){ return x < col.lo || x > col.hi; }) : [];
+      col.zeros = nums.filter(function(x){ return x === 0; }).length;
+    } else if (col.type === "date"){
+      var ts = vals.map(parseDate).filter(function(x){ return isFinite(x); });
+      ts.sort(function(a, b){ return a - b; });
+      col.dmin = ts[0]; col.dmax = ts[ts.length - 1]; col.dn = ts.length;
+      col.ambiguous = vals.some(function(v){
+        var m = SLASH_RE.exec(v); return m && +m[1] <= 12 && +m[2] <= 12;
+      });
+    } else {
+      var lens = vals.map(function(v){ return v.length; }).sort(function(a, b){ return a - b; });
+      col.lmin = lens[0]; col.lmed = quantile(lens, .5); col.lmax = lens[lens.length - 1];
+      col.categorical = col.distinct > 0 && col.distinct <= Math.max(2, Math.min(25, vals.length * .1));
+    }
+    col.isKey = col.missing === 0 && col.distinct === raw.length && raw.length > 1;
+    col.isConstant = col.distinct === 1;
+    return col;
+  }
+
+  /* =========================== rendering =========================== */
+  var fmt = function(x){
+    if (!isFinite(x)) return "—";
+    var a = Math.abs(x);
+    if (a >= 1e6) return (x / 1e6).toFixed(2) + "M";
+    if (a >= 1000) return x.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    if (Number.isInteger(x)) return String(x);
+    return x.toFixed(a < 1 ? 3 : 2);
+  };
+  var pct = function(x){ return (x * 100).toFixed(x > 0 && x < .01 ? 1 : 0) + "%"; };
+  var esc = function(s){ return String(s).replace(/[&<>]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;" }[c]; }); };
+  var day = function(ts){ return isFinite(ts) ? new Date(ts).toISOString().slice(0, 10) : "—"; };
+
+  function histSVG(col){
+    var W = 132, H = 34, B = 12;
+    if (!col.nums || col.nums.length < 2 || col.min === col.max) return "";
+    var bins = new Array(B).fill(0), span = col.max - col.min;
+    col.nums.forEach(function(v){
+      var k = Math.min(B - 1, Math.floor((v - col.min) / span * B));
+      bins[k]++;
+    });
+    var peak = Math.max.apply(null, bins), bw = W / B;
+    var bars = bins.map(function(c, i){
+      var h = peak ? Math.max(c ? 1.5 : 0, c / peak * (H - 2)) : 0;
+      var mid = col.min + (i + .5) * span / B;
+      var out = mid < col.lo || mid > col.hi;
+      return '<rect x="' + (i * bw).toFixed(1) + '" y="' + (H - h).toFixed(1) +
+             '" width="' + (bw - 1.2).toFixed(1) + '" height="' + h.toFixed(1) +
+             '" fill="' + (out ? "var(--accent)" : "var(--bar)") + '"></rect>';
+    }).join("");
+    return '<svg class="spark" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H +
+      '" role="img" aria-label="Distribution of ' + esc(col.name) + '">' + bars + '</svg>';
+  }
+
+  function catSVG(col){
+    var W = 132, rowH = 9, gap = 3;
+    if (!col.top.length) return "";
+    var peak = col.top[0][1];
+    var bars = col.top.slice(0, 4).map(function(t, i){
+      var w = Math.max(2, t[1] / peak * W);
+      return '<rect x="0" y="' + (i * (rowH + gap)) + '" width="' + w.toFixed(1) +
+             '" height="' + rowH + '" fill="var(--bar)"></rect>';
+    }).join("");
+    var H = Math.min(4, col.top.length) * (rowH + gap);
+    return '<svg class="spark" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H +
+      '" role="img" aria-label="Most common values of ' + esc(col.name) + '">' + bars + '</svg>';
+  }
+
+  function summarise(col){
+    if (col.type === "integer" || col.type === "numeric"){
+      return '<div class="dist"><b>' + fmt(col.min) + " … " + fmt(col.max) + '</b> ' +
+        '<span>median</span> <b>' + fmt(col.med) + '</b> <span>mean</span> <b>' + fmt(col.mean) + '</b>' +
+        (col.outliers.length ? '<br><span>beyond 1.5×IQR:</span> <b>' + col.outliers.length + '</b> ' +
+          '<span>(max ' + fmt(col.outliers[col.outliers.length - 1]) + ')</span>' : "") +
+        '</div>';
+    }
+    if (col.type === "date"){
+      var days = (col.dmax - col.dmin) / 86400000;
+      return '<div class="dist"><b>' + day(col.dmin) + " → " + day(col.dmax) + '</b><br>' +
+        '<span>span</span> <b>' + Math.round(days) + '</b> <span>days</span></div>';
+    }
+    if (col.type === "boolean" || col.categorical){
+      return '<div class="dist">' + col.top.map(function(t){
+        return '<b>' + esc(t[0]) + '</b> <span>' + t[1] + '</span>';
+      }).join(" · ") + (col.distinct > 5 ? ' <span>+' + (col.distinct - 5) + ' more</span>' : "") + '</div>';
+    }
+    return '<div class="dist"><span>length</span> <b>' + col.lmin + "–" + col.lmax + '</b> ' +
+      '<span>median</span> <b>' + fmt(col.lmed) + '</b><br><span>e.g.</span> ' +
+      esc((col.present[0] || "").slice(0, 44)) + '</div>';
+  }
+
+  function tags(col){
+    var t = [];
+    if (col.isKey) t.push(['candidate key', 1]);
+    if (col.isConstant) t.push(['constant', 1]);
+    if (col.missPct > .2) t.push([pct(col.missPct) + ' missing', 1]);
+    if (col.type === "date" && col.ambiguous) t.push(['ambiguous d/m', 1]);
+    if (col.categorical && !col.isKey) t.push(['categorical', 0]);
+    if (col.outliers && col.outliers.length) t.push([col.outliers.length + ' outliers', 0]);
+    if (col.zeros && col.nums && col.zeros / col.nums.length > .3) t.push([pct(col.zeros / col.nums.length) + ' zero', 0]);
+    if (!t.length) return "";
+    return '<div class="tagrow">' + t.map(function(x){
+      return '<span class="tg' + (x[1] ? " hi" : "") + '">' + x[0] + '</span>';
+    }).join("") + '</div>';
+  }
+
+  function render(cols, rowCount, ms, note){
+    var cells = rowCount * cols.length;
+    var missing = cols.reduce(function(a, c){ return a + c.missing; }, 0);
+    $("stats").innerHTML =
+      [["Rows", rowCount.toLocaleString()],
+       ["Columns", cols.length],
+       ["Cells", cells.toLocaleString()],
+       ["Missing", pct(cells ? missing / cells : 0)],
+       ["Types", new Set(cols.map(function(c){ return c.type; })).size]]
+      .map(function(s){ return '<div class="stat"><dt>' + s[0] + '</dt><dd>' + s[1] + '</dd></div>'; }).join("");
+    $("parsetime").textContent = ms.toFixed(0) + " ms";
+    $("perf").textContent = rowCount.toLocaleString() + " rows profiled in " + ms.toFixed(0) + " ms";
+
+    var flags = [];
+    cols.filter(function(c){ return c.isKey; }).forEach(function(c){
+      flags.push(["good", "candidate key", "<code>" + esc(c.name) + "</code> is unique and complete across all " + rowCount.toLocaleString() + " rows — it can identify a record."]);
+    });
+    cols.filter(function(c){ return c.isConstant; }).forEach(function(c){
+      flags.push(["hi", "constant", "<code>" + esc(c.name) + "</code> holds one value (<code>" + esc(c.top[0] ? c.top[0][0] : "") + "</code>) in every row. It carries no information — check the export filter."]);
+    });
+    cols.filter(function(c){ return c.missPct > .2; }).forEach(function(c){
+      flags.push(["hi", "missing", "<code>" + esc(c.name) + "</code> is " + pct(c.missPct) + " empty. Decide now whether that is 'unknown' or 'zero' — they are not the same and the difference will survive into your results."]);
+    });
+    cols.filter(function(c){ return c.outliers && c.outliers.length; }).forEach(function(c){
+      flags.push(["", "outliers", "<code>" + esc(c.name) + "</code> has " + c.outliers.length + " value" + (c.outliers.length > 1 ? "s" : "") + " beyond 1.5×IQR, the largest being <code>" + fmt(c.outliers[c.outliers.length - 1]) + "</code> against a median of <code>" + fmt(c.med) + "</code>."]);
+    });
+    cols.filter(function(c){ return c.type === "date" && c.ambiguous; }).forEach(function(c){
+      flags.push(["hi", "ambiguous", "<code>" + esc(c.name) + "</code> contains dates where day and month are both ≤ 12. Day-first was assumed. Confirm against the source before trusting any ordering."]);
+    });
+    cols.filter(function(c){ return c.type === "text" && c.distinct === c.present.length && c.present.length > 3 && !c.isKey; }).forEach(function(c){
+      flags.push(["", "free text", "<code>" + esc(c.name) + "</code> is unique in every non-empty row — free text, not a category. Don't group by it."]);
+    });
+    if (!flags.length) flags.push(["good", "clean", "No missingness above 20%, no constant columns, no ambiguous dates, no outliers beyond 1.5×IQR. Unusual."]);
+    $("flags").innerHTML = flags.map(function(f){
+      return '<li><span class="k ' + f[0] + '">' + f[1] + '</span><span class="t">' + f[2] + '</span></li>';
+    }).join("");
+
+    $("cols").innerHTML = cols.map(function(c){
+      var spark = (c.type === "integer" || c.type === "numeric") ? histSVG(c)
+                : (c.type === "boolean" || c.categorical) ? catSVG(c) : "";
+      return "<tr>" +
+        '<td><span class="name">' + esc(c.name) + "</span>" + tags(c) + "</td>" +
+        '<td class="type">' + c.type + "</td>" +
+        '<td class="n"><span class="miss' + (c.missPct > .2 ? " hi" : "") + '">' + pct(c.missPct) + "</span></td>" +
+        '<td class="n">' + c.distinct.toLocaleString() + "</td>" +
+        "<td>" + spark + "</td>" +
+        "<td>" + summarise(c) + "</td>" +
+        "</tr>";
+    }).join("");
+    $("coltime").textContent = cols.length + " profiled";
+
+    // ---- markdown dictionary ----
+    var md = [];
+    md.push("| Column | Type | Missing | Distinct | Summary |");
+    md.push("| --- | --- | ---: | ---: | --- |");
+    cols.forEach(function(c){
+      var s;
+      if (c.type === "integer" || c.type === "numeric") s = "range " + fmt(c.min) + "–" + fmt(c.max) + ", median " + fmt(c.med);
+      else if (c.type === "date") s = day(c.dmin) + " to " + day(c.dmax);
+      else if (c.categorical || c.type === "boolean") s = c.top.map(function(t){ return t[0] + " (" + t[1] + ")"; }).join(", ");
+      else s = "free text, " + c.lmin + "–" + c.lmax + " chars";
+      md.push("| `" + c.name + "` | " + c.type + " | " + pct(c.missPct) + " | " + c.distinct + " | " + s.replace(/\|/g, "\\|") + " |");
+    });
+    md.push("");
+    md.push("**Notes**");
+    md.push("");
+    flags.forEach(function(f){
+      md.push("- **" + f[1] + "** — " + f[2].replace(/<[^>]+>/g, "").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&"));
+    });
+    md.push("");
+    md.push("_" + rowCount.toLocaleString() + " rows × " + cols.length + " columns" + (note ? " · " + note : "") + "._");
+    $("dict").textContent = md.join("\n");
+  }
+
+  /* =========================== intake =========================== */
+  function ingest(text, note){
+    $("err").innerHTML = "";
+    var t0 = performance.now();
+    try {
+      var d = sniff(text);
+      var rows = parseDelimited(text, d);
+      if (rows.length < 2) throw new Error("Fewer than two lines — nothing to profile.");
+      var header = rows[0].map(function(h, i){ return (h || "").trim() || "column_" + (i + 1); });
+      var body = rows.slice(1);
+      var width = header.length;
+      var ragged = 0;
+      var cols = header.map(function(name, ci){
+        var raw = new Array(body.length);
+        for (var r = 0; r < body.length; r++){
+          if (body[r].length !== width) ragged++;
+          raw[r] = body[r][ci];
+        }
+        return profile(name, raw);
+      });
+      var ms = performance.now() - t0;
+      var label = "delimiter " + (d === "\t" ? "tab" : "'" + d + "'") + (note ? " · " + note : "");
+      render(cols, body.length, ms, label);
+      $("banner").innerHTML = note
+        ? "Showing <b>sample data</b> — 42 dock inspections, deliberately messy. Drop your own file to replace it."
+        : "Read <b>" + body.length.toLocaleString() + " rows</b> · " + label +
+          (ragged ? " · <b>" + Math.round(ragged / width) + " ragged rows</b> padded with blanks" : "");
+    } catch (e){
+      $("err").innerHTML = '<div class="err">Could not read that: ' + esc(e.message) +
+        " — check it is delimited text with a header row.</div>";
+    }
+  }
+
+  /* ---- the sample: messy on purpose ---- */
+  var SAMPLE = [
+"inspection_id,dock_code,inspected_on,borough,survey_round,docks_total,docks_faulty,repair_cost_gbp,inspector,notes",
+"INS-1001,DK-014,2026-03-02,Southwark,2026Q1,24,2,148.00,R. Adeyemi,Two locking pins seized",
+"INS-1002,DK-113,2026-03-02,Camden,2026Q1,18,0,0,R. Adeyemi,",
+"INS-1003,DK-007,2026-03-03,Hackney,2026Q1,30,5,412.50,J. Whitlock,\"Vandalism, panel replaced\"",
+"INS-1004,DK-088,2026-03-04,Southwark,2026Q1,24,1,64.00,J. Whitlock,",
+"INS-1005,DK-021,2026-03-05,Lambeth,2026Q1,12,0,0,M. Sørensen,Clean",
+"INS-1006,DK-140,2026-03-05,Camden,2026Q1,36,3,,M. Sørensen,Awaiting quote",
+"INS-1007,DK-055,2026-03-06,Hackney,2026Q1,18,1,89.99,R. Adeyemi,",
+"INS-1008,DK-092,2026-03-09,Islington,2026Q1,24,0,0,J. Whitlock,",
+"INS-1009,DK-031,2026-03-09,Lambeth,2026Q1,12,2,203.00,M. Sørensen,Both faulty docks at the river end",
+"INS-1010,DK-118,2026-03-10,Camden,2026Q1,30,12,4820.00,R. Adeyemi,\"Flood damage, whole row rebuilt\"",
+"INS-1011,DK-002,2026-03-11,Southwark,2026Q1,18,0,0,J. Whitlock,",
+"INS-1012,DK-076,2026-03-11,Islington,2026Q1,24,1,71.25,M. Sørensen,",
+"INS-1013,DK-045,2026-03-12,Hackney,2026Q1,36,4,338.00,R. Adeyemi,Recurring — third visit this quarter",
+"INS-1014,DK-129,2026-03-13,Lambeth,2026Q1,12,0,0,J. Whitlock,",
+"INS-1015,DK-063,2026-03-16,Camden,2026Q1,18,2,157.40,M. Sørensen,",
+"INS-1016,DK-011,2026-03-16,Southwark,2026Q1,24,0,,R. Adeyemi,Inspector left early",
+"INS-1017,DK-097,2026-03-17,Islington,2026Q1,30,3,266.00,J. Whitlock,",
+"INS-1018,DK-038,2026-03-18,Hackney,2026Q1,18,1,95.00,M. Sørensen,",
+"INS-1019,DK-152,2026-03-19,Lambeth,2026Q1,12,1,110.75,R. Adeyemi,",
+"INS-1020,DK-024,2026-03-20,Camden,2026Q1,36,0,0,J. Whitlock,",
+"INS-1021,DK-081,2026-03-23,Southwark,2026Q1,24,6,701.20,M. Sørensen,\"Card reader theft, four docks\"",
+"INS-1022,DK-134,2026-03-23,Islington,2026Q1,18,0,0,R. Adeyemi,",
+"INS-1023,DK-049,2026-03-24,Hackney,2026Q1,30,2,182.60,J. Whitlock,",
+"INS-1024,DK-016,2026-03-25,Lambeth,2026Q1,12,0,0,M. Sørensen,",
+"INS-1025,DK-105,2026-03-26,Camden,2026Q1,24,1,58.00,R. Adeyemi,",
+"INS-1026,DK-070,2026-03-27,Southwark,2026Q1,18,3,299.99,J. Whitlock,",
+"INS-1027,DK-027,2026-03-30,Islington,2026Q1,36,0,,M. Sørensen,No access — works on site",
+"INS-1028,DK-146,2026-03-30,Hackney,2026Q1,12,1,84.50,R. Adeyemi,",
+"INS-1029,DK-058,2026-03-31,Lambeth,2026Q1,24,2,176.00,J. Whitlock,",
+"INS-1030,DK-093,2026-04-01,Camden,2026Q1,18,0,0,M. Sørensen,",
+"INS-1031,DK-035,2026-04-02,Southwark,2026Q1,30,4,395.00,R. Adeyemi,",
+"INS-1032,DK-121,2026-04-02,Islington,2026Q1,12,0,0,J. Whitlock,",
+"INS-1033,DK-067,2026-04-03,Hackney,2026Q1,24,1,66.80,M. Sørensen,",
+"INS-1034,DK-009,2026-04-06,Lambeth,2026Q1,18,2,204.30,R. Adeyemi,",
+"INS-1035,DK-158,2026-04-07,Camden,2026Q1,36,1,72.00,J. Whitlock,",
+"INS-1036,DK-042,2026-04-08,Southwark,2026Q1,12,0,0,M. Sørensen,",
+"INS-1037,DK-110,2026-04-09,Islington,2026Q1,24,5,548.75,R. Adeyemi,\"Salt corrosion on the whole west side\"",
+"INS-1038,DK-084,2026-04-10,Hackney,2026Q1,18,0,0,J. Whitlock,",
+"INS-1039,DK-019,2026-04-13,Lambeth,2026Q1,30,2,221.00,M. Sørensen,",
+"INS-1040,DK-137,2026-04-14,Camden,2026Q1,24,1,93.40,R. Adeyemi,",
+"INS-1041,DK-051,2026-04-15,Southwark,2026Q1,12,0,0,J. Whitlock,",
+"INS-1042,DK-100,2026-04-16,Islington,2026Q1,18,3,287.60,M. Sørensen,Reported by a member of the public"
+  ].join("\n");
+
+  /* ---- events ---- */
+  var drop = $("drop"), inner = $("dropInner");
+  ["dragenter", "dragover"].forEach(function(ev){
+    document.addEventListener(ev, function(e){ e.preventDefault(); inner.classList.add("hot"); });
+  });
+  ["dragleave", "drop"].forEach(function(ev){
+    document.addEventListener(ev, function(e){ e.preventDefault(); if (ev === "dragleave" && e.relatedTarget) return; inner.classList.remove("hot"); });
+  });
+  document.addEventListener("drop", function(e){
+    e.preventDefault();
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) readFile(f);
+  });
+  function readFile(f){
+    var fr = new FileReader();
+    fr.onload = function(){ ingest(String(fr.result), null); $("paste").value = ""; };
+    fr.onerror = function(){ $("err").innerHTML = '<div class="err">Could not read that file.</div>'; };
+    fr.readAsText(f);
+  }
+  $("file").addEventListener("change", function(){ if (this.files[0]) readFile(this.files[0]); });
+  var lbl = document.querySelector('label[for="file"]');
+  lbl.addEventListener("keydown", function(e){ if (e.key === "Enter" || e.key === " "){ e.preventDefault(); $("file").click(); } });
+  $("readPaste").addEventListener("click", function(){
+    var t = $("paste").value.trim();
+    if (!t){ $("err").innerHTML = '<div class="err">Nothing pasted yet.</div>'; return; }
+    ingest(t, null);
+  });
+  $("sample").addEventListener("click", function(){ $("paste").value = ""; ingest(SAMPLE, "sample data"); });
+  $("clear").addEventListener("click", function(){
+    $("paste").value = ""; $("cols").innerHTML = ""; $("flags").innerHTML = "";
+    $("stats").innerHTML = ""; $("dict").textContent = ""; $("err").innerHTML = "";
+    $("banner").innerHTML = "Cleared. Drop a file, paste text, or <b>load the sample</b>.";
+  });
+  $("copy").addEventListener("click", function(){
+    var self = this, txt = $("dict").textContent;
+    var done = function(){ self.textContent = "Copied"; setTimeout(function(){ self.textContent = "Copy"; }, 1500); };
+    if (navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(done, function(){ selectDict(); });
+    } else selectDict();
+    function selectDict(){
+      var r = document.createRange(); r.selectNodeContents($("dict"));
+      var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+      self.textContent = "Press ⌘C";
+      setTimeout(function(){ self.textContent = "Copy"; }, 2200);
+    }
+  });
+
+  ingest(SAMPLE, "sample data");
+})();
+</script>
+</body>
+</html>

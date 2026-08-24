@@ -43,6 +43,7 @@ const USE_CASES = Object.keys(tax.use_case ?? {});
 const STYLES = Object.keys(tax.style ?? {});
 const FAMILIES = Object.keys(tax.family ?? {});
 const TECHNIQUES = tax.techniques ?? [];
+const DESIGNS = Object.keys(tax.design ?? {});
 const LICENSES = tax.license_allowed ?? [];
 
 // --- taxonomy.yaml is itself validated, so a bad vocab PR fails fast ---
@@ -54,6 +55,8 @@ for (const [style, def] of Object.entries(tax.style ?? {})) {
 
 const entries = loadEntries();
 const seenTitles = new Map();
+/** style + design, to catch two entries that would land on the grid looking alike. */
+const seenLooks = new Map();
 
 for (const { slug, dir, tierDir, meta, parseError } of entries) {
   if (parseError) { err(slug, parseError); continue; }
@@ -104,6 +107,20 @@ for (const { slug, dir, tierDir, meta, parseError } of entries) {
   }
   for (const t of meta.techniques ?? []) {
     if (!TECHNIQUES.includes(t)) err(slug, `unknown technique "${t}"`);
+  }
+  if (meta.design !== undefined) {
+    if (Array.isArray(meta.design)) err(slug, 'design must be a single value, not a list');
+    else if (!DESIGNS.includes(meta.design)) err(slug, `unknown design "${meta.design}"`);
+    else {
+      const look = `${meta.style}/${meta.design}`;
+      if (seenLooks.has(look)) {
+        warn(slug, `same style and design as ${seenLooks.get(look)} (${look}) — these two will look alike on the grid`);
+      } else {
+        seenLooks.set(look, slug);
+      }
+    }
+  } else {
+    warn(slug, 'no design — accepted, but the grid is browsed visually');
   }
   if (meta.style === 'tracker' && !(meta.techniques ?? []).includes('localstorage')) {
     warn(slug, 'style "tracker" usually needs the "localstorage" technique');

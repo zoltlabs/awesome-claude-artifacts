@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Why Adding a Person Didn't Help</title>
+<style>
+:root{
+  --ground:#EDF2F7; --grid-a:#D5E1EC; --grid-b:#C2D3E3; --panel:#FFFFFF;
+  --line:#2B5580; --line-soft:#7FA0BE; --ink:#0E2A47; --ink-2:#41627F; --ink-3:#7E96AC;
+  --callout:#B5651D; --callout-soft:#E3A96A; --good:#2F6E4F; --bad:#A8443A;
+  --rule:#B9CBDB;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0E2A47; --grid-a:#163553; --grid-b:#1E4066; --panel:#123256;
+    --line:#7FA8CE; --line-soft:#43698F; --ink:#E8F0F8; --ink-2:#A8C2D8; --ink-3:#6E8DA8;
+    --callout:#F2A33C; --callout-soft:#8A5F2A; --good:#6ECF9E; --bad:#F2887C;
+    --rule:#28496B;
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#0E2A47; --grid-a:#163553; --grid-b:#1E4066; --panel:#123256;
+  --line:#7FA8CE; --line-soft:#43698F; --ink:#E8F0F8; --ink-2:#A8C2D8; --ink-3:#6E8DA8;
+  --callout:#F2A33C; --callout-soft:#8A5F2A; --good:#6ECF9E; --bad:#F2887C;
+  --rule:#28496B;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--ground); color:var(--ink);
+  background-image:
+    linear-gradient(var(--grid-a) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-a) 1px, transparent 1px),
+    linear-gradient(var(--grid-b) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-b) 1px, transparent 1px);
+  background-size:16px 16px, 16px 16px, 96px 96px, 96px 96px;
+  font-family:ui-sans-serif, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size:15px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.mono,code{font-family:ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace}
+.sheet{max-width:1040px; margin:0 auto; padding:20px 18px 60px}
+
+/* ---- title block ---- */
+.titleblock{border:2px solid var(--line); background:var(--panel); display:grid; grid-template-columns:1fr auto}
+.titleblock .main{padding:18px 20px 16px; border-right:2px solid var(--line)}
+.titleblock .stamp{font-family:ui-monospace,Menlo,monospace; font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3)}
+h1{margin:8px 0 6px; font-size:clamp(22px,4vw,34px); line-height:1.08; letter-spacing:-.01em; font-weight:600; text-wrap:balance}
+.titleblock p{margin:0; max-width:62ch; color:var(--ink-2); font-size:14.5px}
+.specs{display:flex; flex-direction:column; font-family:ui-monospace,Menlo,monospace; font-size:10.5px}
+.specs div{padding:8px 14px; border-bottom:1px solid var(--rule); min-width:132px}
+.specs div:last-child{border-bottom:0}
+.specs dt{color:var(--ink-3); letter-spacing:.12em; text-transform:uppercase; font-size:9.5px}
+.specs dd{margin:2px 0 0; color:var(--ink)}
+
+/* ---- panels ---- */
+.panel{border:1px solid var(--line); background:var(--panel); margin-top:16px}
+.panel > h2{
+  margin:0; padding:9px 14px; border-bottom:1px solid var(--line);
+  font-family:ui-monospace,Menlo,monospace; font-size:10.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink-2); font-weight:500;
+  display:flex; gap:10px; align-items:baseline;
+}
+.panel > h2 b{color:var(--callout); font-weight:500}
+.panel > h2 .r{margin-left:auto; color:var(--ink-3); letter-spacing:.1em}
+.body{padding:16px 16px 18px}
+
+/* ---- controls ---- */
+.controls{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:16px 22px}
+.ctl label{display:flex; align-items:baseline; gap:8px; font-family:ui-monospace,Menlo,monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-2)}
+.ctl label .v{margin-left:auto; color:var(--ink); font-size:14px; font-variant-numeric:tabular-nums}
+.ctl input[type=range]{width:100%; margin:8px 0 0; accent-color:var(--callout); height:22px}
+.ctl .hint{font-size:12px; color:var(--ink-3); margin-top:2px}
+.buttons{display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; padding-top:14px; border-top:1px dashed var(--rule)}
+button{
+  font-family:ui-monospace,Menlo,monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  padding:8px 14px; background:transparent; color:var(--ink); border:1px solid var(--line);
+  cursor:pointer; border-radius:0;
+}
+button:hover{background:var(--line); color:var(--panel)}
+button.key{border-color:var(--callout); color:var(--callout)}
+button.key:hover{background:var(--callout); color:var(--panel)}
+:focus-visible{outline:2px solid var(--callout); outline-offset:2px}
+
+/* ---- readouts ---- */
+.readouts{display:grid; grid-template-columns:repeat(auto-fit,minmax(126px,1fr)); border-top:1px solid var(--line)}
+.ro{padding:11px 14px 13px; border-right:1px solid var(--rule)}
+.ro:last-child{border-right:0}
+.ro dt{font-family:ui-monospace,Menlo,monospace; font-size:9.5px; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-3)}
+.ro dd{margin:4px 0 0; font-family:ui-monospace,Menlo,monospace; font-size:19px; font-variant-numeric:tabular-nums; line-height:1.15}
+.ro dd small{font-size:11px; color:var(--ink-3)}
+.ro.warn dd{color:var(--bad)}
+.ro.ok dd{color:var(--good)}
+
+/* ---- canvases ---- */
+.two{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+canvas{display:block; width:100%; height:auto}
+.cap{
+  font-family:ui-monospace,Menlo,monospace; font-size:10.5px; color:var(--ink-3);
+  padding:8px 14px 11px; border-top:1px dashed var(--rule); line-height:1.5;
+}
+.cap b{color:var(--callout); font-weight:500}
+
+/* ---- note ---- */
+.note{margin-top:16px; border-left:3px solid var(--callout); padding:2px 0 2px 16px; color:var(--ink-2); font-size:14.5px; max-width:70ch}
+.note b{color:var(--ink); font-weight:600}
+footer{margin-top:26px; font-family:ui-monospace,Menlo,monospace; font-size:10.5px; color:var(--ink-3); display:flex; gap:14px; flex-wrap:wrap}
+@media (max-width:560px){
+  .titleblock{grid-template-columns:1fr}
+  .titleblock .main{border-right:0; border-bottom:2px solid var(--line)}
+  .specs{flex-direction:row; flex-wrap:wrap}
+  .specs div{flex:1; border-bottom:0; border-right:1px solid var(--rule)}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="titleblock">
+  <div class="main">
+    <span class="stamp">Operations · queueing dynamics · sheet 1 of 1</span>
+    <h1>Why adding a person didn't help</h1>
+    <p>A support desk, simulated one call at a time. Set the arrival rate, the average handle
+    time, and the headcount — then watch what happens to the wait as utilisation climbs past
+    about 85%. The curve is the point.</p>
+  </div>
+  <dl class="specs">
+    <div><dt>Model</dt><dd>M/M/c</dd></div>
+    <div><dt>Arrivals</dt><dd>Poisson</dd></div>
+    <div><dt>Service</dt><dd>Exponential</dd></div>
+    <div><dt>Rev</dt><dd>A</dd></div>
+  </dl>
+</header>
+
+<section class="panel">
+  <h2>1 — Inputs <span class="r">drag to change</span></h2>
+  <div class="body">
+    <div class="controls">
+      <div class="ctl">
+        <label for="lam">Calls per hour <span class="v" id="lamV">60</span></label>
+        <input id="lam" type="range" min="10" max="240" step="1" value="60">
+        <div class="hint">Offered demand.</div>
+      </div>
+      <div class="ctl">
+        <label for="aht">Handle time (min) <span class="v" id="ahtV">4.0</span></label>
+        <input id="aht" type="range" min="1" max="15" step="0.5" value="4">
+        <div class="hint">Average, not maximum.</div>
+      </div>
+      <div class="ctl">
+        <label for="cc">Agents on shift <span class="v" id="ccV">5</span></label>
+        <input id="cc" type="range" min="1" max="20" step="1" value="5">
+        <div class="hint">The lever everyone reaches for.</div>
+      </div>
+    </div>
+    <div class="buttons">
+      <button class="key" id="preset">Preset: 92% utilisation</button>
+      <button id="addOne">Add one agent</button>
+      <button id="pause">Pause</button>
+      <button id="reset">Reset run</button>
+    </div>
+  </div>
+  <dl class="readouts">
+    <div class="ro"><dt>Offered load</dt><dd id="roA">—<small> erl</small></dd></div>
+    <div class="ro" id="roUtilBox"><dt>Utilisation</dt><dd id="roUtil">—</dd></div>
+    <div class="ro"><dt>Avg wait (theory)</dt><dd id="roWq">—</dd></div>
+    <div class="ro"><dt>Avg wait (observed)</dt><dd id="roObs">—</dd></div>
+    <div class="ro"><dt>Answered &lt; 30s</dt><dd id="roSL">—</dd></div>
+  </dl>
+</section>
+
+<div class="two">
+  <section class="panel">
+    <h2>2 — The floor <b id="clock">00:00</b></h2>
+    <canvas id="floor" width="960" height="620" role="img"
+      aria-label="Animated view of the support desk: agent stations filling and a queue of waiting callers building up."></canvas>
+    <p class="cap">Each square is an agent; each tick to the left is a caller waiting.
+    <b>Watch the queue</b>, not the agents — busy agents look identical at 70% and at 95%.</p>
+  </section>
+
+  <section class="panel">
+    <h2>3 — The curve <span class="r">Erlang C</span></h2>
+    <canvas id="chart" width="960" height="620" role="img"
+      aria-label="Average wait plotted against utilisation, for the current headcount and for one agent more."></canvas>
+    <p class="cap">Wait against utilisation at this handle time. The lower line is the same desk
+    with <b>one more agent</b>. The gap between them is what that person actually buys you.</p>
+  </section>
+</div>
+
+<p class="note"><b>The reason this feels wrong.</b> Utilisation is a comfortable number — 92%
+sounds like a well-run desk, and 70% sounds like slack you should cut. But the wait doesn't rise
+in proportion to the load; it rises in proportion to <span class="mono">1/(1−ρ)</span>. Going from
+70% to 92% doesn't add a third to the wait. It multiplies it. The same arithmetic in reverse is
+why the extra agent seems to do nothing at 70% and works like magic at 92% — and why a desk run
+at "full efficiency" is a desk one sick day away from a crisis.</p>
+
+<footer>
+  <span>M/M/c · Erlang C · simulated arrivals, no data leaves this file</span>
+  <span id="served">0 calls served</span>
+</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){ return document.getElementById(id); };
+  var css = function(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); };
+
+  /* ---------------- inputs ---------------- */
+  var lam = $("lam"), aht = $("aht"), cc = $("cc");
+  var P = { lam: 60, aht: 4, c: 5 };
+
+  function readInputs(){
+    P.lam = +lam.value; P.aht = +aht.value; P.c = +cc.value;
+    $("lamV").textContent = P.lam;
+    $("ahtV").textContent = P.aht.toFixed(1);
+    $("ccV").textContent = P.c;
+  }
+
+  /* ---------------- Erlang ---------------- */
+  // Erlang B by the stable recursion; Erlang C from B.
+  function erlangB(c, a){
+    var inv = 1;
+    for (var n = 1; n <= c; n++) inv = 1 + inv * n / a;
+    return 1 / inv;
+  }
+  function erlangC(c, a){
+    if (a >= c) return 1;
+    var b = erlangB(c, a), rho = a / c;
+    return b / (1 - rho * (1 - b));
+  }
+  // Average wait in seconds for offered load a erlangs, c agents, AHT seconds.
+  function wq(c, a, ahtSec){
+    if (a >= c) return Infinity;
+    return erlangC(c, a) * ahtSec / (c - a);
+  }
+  function serviceLevel(c, a, ahtSec, target){
+    if (a >= c) return 0;
+    return 1 - erlangC(c, a) * Math.exp(-(c - a) * target / ahtSec);
+  }
+
+  /* ---------------- simulation ---------------- */
+  var sim = null;
+  function newSim(){
+    return {
+      t: 0,                       // sim seconds
+      nextArrival: 0,
+      agents: new Array(P.c).fill(0).map(function(){ return { until: -1 }; }),
+      queue: [],                  // arrival timestamps
+      waits: [],                  // rolling completed waits
+      served: 0,
+      answeredFast: 0,
+      maxQ: 0
+    };
+  }
+  function resize(){
+    if (!sim) return;
+    while (sim.agents.length < P.c) sim.agents.push({ until: -1 });
+    if (sim.agents.length > P.c) sim.agents.length = P.c;
+  }
+  function expo(mean){ return -mean * Math.log(1 - Math.random()); }
+
+  function step(dt){
+    var lamPerSec = P.lam / 3600, ahtSec = P.aht * 60;
+    var end = sim.t + dt;
+    // arrivals
+    while (sim.nextArrival <= end){
+      if (sim.nextArrival < sim.t) sim.nextArrival = sim.t;
+      sim.queue.push(sim.nextArrival);
+      sim.nextArrival += expo(1 / lamPerSec);
+      if (sim.queue.length > sim.maxQ) sim.maxQ = sim.queue.length;
+      if (sim.queue.length > 4000) sim.queue.shift(); // runaway guard
+    }
+    sim.t = end;
+    // completions then assignment
+    for (var i = 0; i < sim.agents.length; i++){
+      var ag = sim.agents[i];
+      if (ag.until >= 0 && ag.until <= sim.t) ag.until = -1;
+      if (ag.until < 0 && sim.queue.length){
+        var arrived = sim.queue.shift();
+        var waited = sim.t - arrived;
+        sim.waits.push(waited);
+        if (sim.waits.length > 300) sim.waits.shift();
+        sim.served++;
+        if (waited <= 30) sim.answeredFast++;
+        ag.until = sim.t + expo(ahtSec);
+      }
+    }
+  }
+
+  /* ---------------- drawing helpers ---------------- */
+  function fit(cv){
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = cv.clientWidth || 480;
+    var h = Math.round(w * (cv.getAttribute("data-ar") ? +cv.getAttribute("data-ar") : 0.72));
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    cv.style.height = h + "px";
+    var g = cv.getContext("2d");
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { g: g, w: w, h: h };
+  }
+  function dashed(g, x1, y1, x2, y2, col){
+    g.save(); g.setLineDash([4, 4]); g.strokeStyle = col; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(x1, y1); g.lineTo(x2, y2); g.stroke(); g.restore();
+  }
+  // A dimension line with arrow terminals, drawn vertically.
+  function dimension(g, x, y1, y2, label, col){
+    g.save();
+    g.strokeStyle = col; g.fillStyle = col; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(x, y1); g.lineTo(x, y2); g.stroke();
+    [[y1, 1], [y2, -1]].forEach(function(p){
+      g.beginPath();
+      g.moveTo(x, p[0]); g.lineTo(x - 3.5, p[0] + 7 * p[1]); g.lineTo(x + 3.5, p[0] + 7 * p[1]);
+      g.closePath(); g.fill();
+    });
+    g.font = "500 11px ui-monospace, Menlo, monospace";
+    var mid = (y1 + y2) / 2, tw = g.measureText(label).width;
+    g.save();
+    g.translate(x - 7, mid); g.rotate(-Math.PI / 2);
+    g.fillStyle = css("--panel"); g.fillRect(-tw / 2 - 4, -8, tw + 8, 14);
+    g.fillStyle = col; g.textAlign = "center"; g.textBaseline = "middle";
+    g.fillText(label, 0, 0);
+    g.restore();
+    g.restore();
+  }
+
+  /* ---------------- floor plan ---------------- */
+  var floor = $("floor");
+  floor.setAttribute("data-ar", "0.68");
+  function drawFloor(){
+    var f = fit(floor), g = f.g, W = f.w, H = f.h;
+    var line = css("--line"), soft = css("--line-soft"), ink = css("--ink"),
+        ink3 = css("--ink-3"), call = css("--callout"), panel = css("--panel");
+    g.clearRect(0, 0, W, H);
+
+    var pad = 16, qw = Math.min(120, W * 0.3);
+    var gx = pad + qw + 14, gw = W - gx - pad;
+
+    // queue column
+    g.font = "10px ui-monospace, Menlo, monospace";
+    g.fillStyle = ink3; g.textAlign = "left"; g.textBaseline = "top";
+    g.fillText("QUEUE", pad, pad);
+    g.fillText(String(sim.queue.length).padStart(3, "0"), pad, pad + 13);
+
+    var qTop = pad + 34, qBot = H - pad - 16;
+    g.strokeStyle = soft; g.lineWidth = 1;
+    g.strokeRect(pad + .5, qTop + .5, qw - 2, qBot - qTop);
+
+    var shown = Math.min(sim.queue.length, 60);
+    var slotH = (qBot - qTop - 8) / 60;
+    for (var i = 0; i < shown; i++){
+      var waited = sim.t - sim.queue[sim.queue.length - 1 - i];
+      g.fillStyle = waited > 120 ? call : (waited > 30 ? soft : line);
+      g.fillRect(pad + 5, qBot - 6 - (i + 1) * slotH, qw - 12, Math.max(1.5, slotH - 1.4));
+    }
+    if (sim.queue.length > 60){
+      g.fillStyle = call; g.font = "10px ui-monospace, Menlo, monospace";
+      g.textAlign = "left"; g.fillText("+" + (sim.queue.length - 60), pad + 5, qTop + 4);
+    }
+
+    // agent grid
+    g.fillStyle = ink3; g.textAlign = "left"; g.textBaseline = "top";
+    g.fillText("STATIONS", gx, pad);
+    var cols = Math.min(5, Math.max(2, Math.ceil(Math.sqrt(P.c))));
+    var rows = Math.ceil(P.c / cols);
+    var cw = gw / cols, ch = Math.min(74, (H - pad - 34 - pad) / rows);
+    var top = pad + 34;
+    for (var k = 0; k < P.c; k++){
+      var r = Math.floor(k / cols), c2 = k % cols;
+      var x = gx + c2 * cw + 4, y = top + r * ch + 4;
+      var w2 = cw - 10, h2 = ch - 10;
+      var busy = sim.agents[k] && sim.agents[k].until >= 0;
+      g.strokeStyle = busy ? call : soft;
+      g.lineWidth = busy ? 1.6 : 1;
+      g.strokeRect(x + .5, y + .5, w2, h2);
+      if (busy){
+        g.fillStyle = call; g.globalAlpha = .16;
+        g.fillRect(x + 1, y + 1, w2 - 1, h2 - 1);
+        g.globalAlpha = 1;
+      }
+      g.fillStyle = busy ? call : ink3;
+      g.font = "10px ui-monospace, Menlo, monospace";
+      g.textAlign = "left"; g.textBaseline = "top";
+      g.fillText("A" + String(k + 1).padStart(2, "0"), x + 5, y + 5);
+      g.textBaseline = "bottom";
+      g.fillText(busy ? "ON CALL" : "FREE", x + 5, y + h2 - 4);
+    }
+
+    // leader line to the queue when it is ugly
+    if (sim.queue.length > P.c * 2){
+      g.strokeStyle = call; g.lineWidth = 1;
+      dashed(g, pad + qw, qTop + 18, gx - 6, qTop + 18, call);
+      g.fillStyle = call; g.font = "10px ui-monospace, Menlo, monospace";
+      g.textAlign = "left"; g.textBaseline = "bottom";
+      g.fillText("BACKLOG", pad + qw + 6, qTop + 15);
+    }
+  }
+
+  /* ---------------- chart ---------------- */
+  var chart = $("chart");
+  chart.setAttribute("data-ar", "0.68");
+  function drawChart(){
+    var f = fit(chart), g = f.g, W = f.w, H = f.h;
+    var line = css("--line"), soft = css("--line-soft"), ink = css("--ink"),
+        ink2 = css("--ink-2"), ink3 = css("--ink-3"), call = css("--callout"), rule = css("--rule");
+    g.clearRect(0, 0, W, H);
+
+    var L = 46, R = 14, T = 18, B = 40;
+    var pw = W - L - R, ph = H - T - B;
+    var ahtSec = P.aht * 60;
+    var yMax = 15 * 60; // 15 minutes
+    var x = function(rho){ return L + (rho - 0.5) / 0.49 * pw; };
+    var y = function(s){ return T + ph - Math.min(s, yMax) / yMax * ph; };
+
+    // grid + axes
+    g.strokeStyle = rule; g.lineWidth = 1;
+    g.font = "10px ui-monospace, Menlo, monospace"; g.fillStyle = ink3;
+    for (var m = 0; m <= 15; m += 3){
+      var yy = y(m * 60);
+      g.beginPath(); g.moveTo(L, yy + .5); g.lineTo(L + pw, yy + .5); g.stroke();
+      g.textAlign = "right"; g.textBaseline = "middle";
+      g.fillText(m + "m", L - 7, yy);
+    }
+    for (var r2 = 0.5; r2 <= 0.99; r2 += 0.1){
+      var xx = x(r2);
+      g.beginPath(); g.moveTo(xx + .5, T); g.lineTo(xx + .5, T + ph); g.stroke();
+      g.textAlign = "center"; g.textBaseline = "top";
+      g.fillText(Math.round(r2 * 100) + "%", xx, T + ph + 7);
+    }
+    g.textAlign = "left";
+    g.fillText("UTILISATION →", L, T + ph + 22);
+
+    // Both curves share an x axis of "utilisation at the CURRENT headcount", so the
+    // dashed line reads as "the same offered load, one more agent" — which is the
+    // question being asked — rather than as a different desk at its own utilisation.
+    function curve(c, col, width, dash){
+      g.save();
+      if (dash) g.setLineDash(dash);
+      g.strokeStyle = col; g.lineWidth = width;
+      g.beginPath();
+      var started = false;
+      for (var rho = 0.5; rho <= 0.99; rho += 0.002){
+        var a = rho * P.c, v = wq(c, a, ahtSec);
+        var px = x(rho), py = y(v);
+        if (!started){ g.moveTo(px, py); started = true; } else g.lineTo(px, py);
+      }
+      g.stroke(); g.restore();
+    }
+    curve(P.c + 1, soft, 1.4, [5, 4]);
+    curve(P.c, line, 2, null);
+
+    // current operating point
+    var a = (P.lam / 3600) * ahtSec, rho = a / P.c;
+    if (rho > 0.5 && rho < 0.985){
+      var px = x(rho);
+      var pyNow = y(wq(P.c, a, ahtSec));
+      var pyPlus = y(wq(P.c + 1, a, ahtSec));
+      dashed(g, px, T, px, T + ph, call);
+      var saved = wq(P.c, a, ahtSec) - wq(P.c + 1, a, ahtSec);
+      if (isFinite(saved) && saved > 5 && Math.abs(pyNow - pyPlus) > 22){
+        dimension(g, px, pyNow, pyPlus, "−" + fmtDur(saved), call);
+      }
+      g.fillStyle = call;
+      g.beginPath(); g.arc(px, pyNow, 4.5, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = css("--panel"); g.lineWidth = 1.5; g.stroke();
+      g.font = "500 11px ui-monospace, Menlo, monospace";
+      g.textAlign = px > L + pw * 0.65 ? "right" : "left";
+      g.textBaseline = "bottom";
+      g.fillStyle = call;
+      g.fillText("YOU ARE HERE", px + (px > L + pw * 0.65 ? -8 : 8), pyNow - 8);
+    }
+
+    // legend
+    g.font = "10px ui-monospace, Menlo, monospace"; g.textBaseline = "middle";
+    g.textAlign = "left";
+    g.strokeStyle = line; g.lineWidth = 2;
+    g.beginPath(); g.moveTo(L + 6, T + 12); g.lineTo(L + 26, T + 12); g.stroke();
+    g.fillStyle = ink2; g.fillText(P.c + " agents", L + 32, T + 12);
+    g.save(); g.setLineDash([5, 4]); g.strokeStyle = soft; g.lineWidth = 1.4;
+    g.beginPath(); g.moveTo(L + 6, T + 28); g.lineTo(L + 26, T + 28); g.stroke(); g.restore();
+    g.fillStyle = ink3; g.fillText((P.c + 1) + " agents", L + 32, T + 28);
+  }
+
+  /* ---------------- readouts ---------------- */
+  function fmtDur(s){
+    if (!isFinite(s)) return "∞";
+    if (s < 60) return Math.round(s) + "s";
+    var m = Math.floor(s / 60);
+    if (m < 60) return m + "m " + String(Math.round(s % 60)).padStart(2, "0") + "s";
+    return Math.floor(m / 60) + "h " + String(m % 60).padStart(2, "0") + "m";
+  }
+  function updateReadouts(){
+    var ahtSec = P.aht * 60;
+    var a = (P.lam / 3600) * ahtSec, rho = a / P.c;
+    $("roA").innerHTML = a.toFixed(2) + "<small> erl</small>";
+    $("roUtil").textContent = (rho * 100).toFixed(1) + "%";
+    var box = $("roUtilBox");
+    box.className = "ro" + (rho >= 0.9 ? " warn" : (rho < 0.8 ? " ok" : ""));
+    $("roWq").textContent = rho >= 1 ? "unstable" : fmtDur(wq(P.c, a, ahtSec));
+    var obs = sim.waits.length
+      ? sim.waits.reduce(function(x1, y1){ return x1 + y1; }, 0) / sim.waits.length : null;
+    $("roObs").textContent = obs === null ? "—" : fmtDur(obs);
+    var sl = rho >= 1 ? 0 : serviceLevel(P.c, a, ahtSec, 30);
+    $("roSL").textContent = (sl * 100).toFixed(0) + "%";
+    $("served").textContent = sim.served.toLocaleString() + " calls served";
+    var mm = Math.floor(sim.t / 60), hh = Math.floor(mm / 60);
+    $("clock").textContent = String(hh).padStart(2, "0") + ":" + String(mm % 60).padStart(2, "0");
+  }
+
+  /* ---------------- loop ---------------- */
+  var running = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var last = 0, acc = 0;
+  var SPEED = 90; // sim seconds per real second
+
+  function frame(ts){
+    if (!last) last = ts;
+    var real = Math.min((ts - last) / 1000, 0.25);
+    last = ts;
+    if (running){
+      var dt = real * SPEED;
+      // fixed sub-steps keep the event ordering sane at speed
+      var steps = Math.min(12, Math.ceil(dt / 5));
+      for (var i = 0; i < steps; i++) step(dt / steps);
+      acc += real;
+    }
+    drawFloor(); drawChart();
+    if (acc > 0.2 || !running){ updateReadouts(); acc = 0; }
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------------- wiring ---------------- */
+  function onInput(){
+    readInputs(); resize(); updateReadouts();
+  }
+  [lam, aht, cc].forEach(function(el){ el.addEventListener("input", onInput); });
+
+  $("pause").addEventListener("click", function(){
+    running = !running;
+    this.textContent = running ? "Pause" : "Resume";
+    last = 0;
+  });
+  $("reset").addEventListener("click", function(){ sim = newSim(); updateReadouts(); });
+  $("addOne").addEventListener("click", function(){
+    cc.value = Math.min(+cc.max, P.c + 1); onInput();
+  });
+  $("preset").addEventListener("click", function(){
+    // 5 agents, 4 min handle time, arrivals tuned to 92% utilisation
+    cc.value = 5; aht.value = 4;
+    lam.value = Math.round(0.92 * 5 / (4 / 60));
+    onInput(); sim = newSim();
+    running = true; $("pause").textContent = "Pause"; last = 0;
+  });
+  window.addEventListener("resize", function(){ drawFloor(); drawChart(); });
+
+  readInputs();
+  sim = newSim();
+  updateReadouts();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>

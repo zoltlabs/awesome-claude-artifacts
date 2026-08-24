@@ -1,0 +1,40 @@
+title: Why Adding a Person Didn't Help
+summary: Simulates a support desk so you can watch wait times go vertical as utilisation
+  approaches capacity.
+tier: source
+
+use_case: [consulting, internal-ops]
+style: simulator
+topics: [operations, queueing, support]
+techniques: [canvas, charts]
+design: blueprint
+
+source: artifact.html
+
+prompt: |
+  A queueing simulator for a support desk, as one self-contained HTML file.
+
+  Inputs: calls per hour, average handle time, and number of agents on shift.
+  Animate arrivals and service on a canvas — agent stations that fill up, and a
+  queue of waiting callers building to their left. Alongside it, plot average
+  wait against utilisation using Erlang C, with a second dashed line showing the
+  same offered load with one more agent, so the gap between them is the value of
+  that hire. Mark the current operating point and draw a dimension line between
+  the two curves labelled with the time saved.
+
+  Include a preset that puts the desk at 92% utilisation, and read out offered
+  load in erlangs, utilisation, theoretical wait, observed wait from the running
+  simulation, and the percentage answered within 30 seconds.
+
+  Style it as a technical drawing: graph-paper ground, a title block, monospace
+  labels, dimension lines with arrow terminals, orange callouts on deep blue.
+  Works in light and dark. No network, no libraries.
+customize:
+  - Change SPEED to run the simulation faster or slower than 90x.
+  - Swap the 30-second service-level target in serviceLevel() for your own SLA.
+  - Ask Claude to add shrinkage, so headcount on shift is lower than headcount hired.
+  - Ask Claude to model abandonment (Erlang A) — callers who hang up while waiting.
+technical: false
+
+author: { name: zoltlabs, github: zoltlabs }
+license: MIT
