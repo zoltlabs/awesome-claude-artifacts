@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm install --no-audit --no-fund
+      - run: npm ci
       - run: npx playwright install --with-deps chromium
       - name: Generate the uncommitted thumbnail variants
         run: npm run shoot -- --all
