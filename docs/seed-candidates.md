@@ -4,7 +4,7 @@ Working brainstorm for Phase 1 of the [spec](taxonomy.html) — the 76 entries t
 the §4 coverage matrix before launch. **Nothing here is built yet.** This is a slate to
 argue with, cut from, and hand to contributors as "good first submissions."
 
-Two rules shaped every concept below:
+Three rules shaped every concept below:
 
 1. **Style first, subject second.** Each of the 15 styles gets at least two candidates,
    from two different use cases and two unrelated domains — because style is the axis
@@ -14,17 +14,26 @@ Two rules shaped every concept below:
    an answer to "where does the data come from" that survives `file://` with the wifi
    off: it ships inline, the user pastes it, or the artifact computes it. Anything whose
    whole point was an API call was cut before it got a line here.
+3. **Every entry carries a distinct visual treatment.** A gallery is browsed as a wall of
+   thumbnails, and neither existing axis predicts what a thumbnail looks like. Each
+   concept is assigned a `design` from the twelve in
+   [design-treatments.md](design-treatments.md), chosen by what the subject argues for
+   and capped at four uses across the slate. Two entries that look alike are one entry at
+   grid distance.
 
 Each entry gives the classification exactly as it would appear in `meta.yaml`, a
 one-line summary, the **hook** (what stops it being the generic version of its shape),
-and a **prompt seed** — the thing that actually gets copied off the card.
+and a **prompt seed** — the thing that actually gets copied off the card. The `design:`
+value closing each classification line is the visual treatment; the recipes, the
+distribution, and the reasoning behind the axis are in
+**[design-treatments.md](design-treatments.md)**.
 
 ---
 
 ## Present — you read it, front to back
 
 ### S1 · Tidewater Robotics — Series A narrative deck
-`deck` · **sales**, marketing · topics: startups, fundraising · techniques: keyboard-nav, charts, print-ready
+`deck` · **sales**, marketing · topics: startups, fundraising · techniques: keyboard-nav, charts, print-ready · design: `boardroom`
 
 > Fifteen slides of a fictional warehouse-robotics raise, with presenter notes and a
 > market-size slide that re-cuts live while you're standing in front of it.
@@ -40,7 +49,7 @@ overlay on N, and one slide where the market sizing is bottom-up and recalculate
 three toggles. Investor-grade typography, no stock photos."
 
 ### S2 · Twelve Slides on Cellular Respiration
-`deck` · **teaching** · topics: biology, education · techniques: svg, keyboard-nav
+`deck` · **teaching** · topics: biology, education · techniques: svg, keyboard-nav · design: `field`
 
 > Glycolysis to the electron transport chain in twelve slides, each one an SVG that
 > builds up in steps rather than appearing at once.
@@ -54,7 +63,7 @@ undergraduates. Every diagram is inline SVG that builds in labelled steps on cli
 a running ATP tally in the corner across all slides. Arrow keys advance."
 
 ### S3 · Riverside Type Festival — sponsorship prospectus
-`one-pager` · **marketing** · topics: events, sponsorship, design · techniques: svg, print-ready
+`one-pager` · **marketing** · topics: events, sponsorship, design · techniques: svg, print-ready · design: `deco`
 
 > One scroll from "what the festival is" to four sponsor tiers to a single booking ask.
 
@@ -69,7 +78,7 @@ four sponsor tiers as comparison cards, then one ask with a deadline. Must print
 tidy A4 pages."
 
 ### S4 · Rate Card & Availability — a working illustrator
-`one-pager` · **creative**, personal · topics: freelance, illustration · techniques: print-ready, svg
+`one-pager` · **creative**, personal · topics: freelance, illustration · techniques: print-ready, svg · design: `riso`
 
 > A freelancer's rates, terms, turnaround, and next open slot, on one page that ends in
 > "book this window."
@@ -84,7 +93,7 @@ that changes which price band is highlighted. Ends with current availability and
 booking ask. Warm, confident, not corporate."
 
 ### S5 · State of the Municipal Tree Canopy
-`report` · **data-research** · topics: urban-planning, environment · techniques: charts, svg, print-ready
+`report` · **data-research** · topics: urban-planning, environment · techniques: charts, svg, print-ready · design: `archival`
 
 > A long-form report on canopy loss across a mid-sized city's wards, with figures,
 > footnotes, and a methodology appendix.
@@ -100,7 +109,7 @@ charts, in-text footnote references that jump both ways, a methods appendix, and
 sticky section outline. Newspaper-of-record tone."
 
 ### S6 · Post-Incident Review: the fourteen-hour outage
-`report` · **internal-ops**, consulting · topics: reliability, incident-response · techniques: svg, print-ready
+`report` · **internal-ops**, consulting · topics: reliability, incident-response · techniques: svg, print-ready · design: `blueprint`
 
 > A blameless PIR: timeline figure, contributing factors, what we're changing, and a
 > two-page executive summary that prints on its own.
@@ -116,7 +125,7 @@ responders believed at each moment, contributing factors as an owner/date table,
 detection and response gaps, and follow-up actions. The exec summary must print alone."
 
 ### B7 · Maturity Assessment: findings and roadmap
-`report` · **consulting** · topics: strategy, assessment · techniques: charts, svg, print-ready
+`report` · **consulting** · topics: strategy, assessment · techniques: charts, svg, print-ready · design: `boardroom`
 
 > The 40-page PDF the spec keeps promising to replace — a five-dimension maturity
 > assessment with scored findings and a sequenced roadmap.
@@ -131,7 +140,7 @@ evidence and a rating rationale, then a 12-month roadmap where each initiative n
 prerequisites. Print-ready."
 
 ### B8 · Launch narrative deck — a category-creation story
-`deck` · **marketing** · topics: positioning, launch · techniques: keyboard-nav, svg
+`deck` · **marketing** · topics: positioning, launch · techniques: keyboard-nav, svg · design: `brutalist`
 
 > The "why now" deck marketing gives sales the week before a launch.
 
@@ -148,7 +157,7 @@ objection-handling slides. Arrow-key nav, dark presentation aesthetic."
 ## Explain — you poke it to understand something
 
 ### S7 · Anatomy of a Sentence
-`diagram` · **teaching** · topics: linguistics, language · techniques: svg, keyboard-nav
+`diagram` · **teaching** · topics: linguistics, language · techniques: svg, keyboard-nav · design: `swiss`
 
 > An interactive constituency tree: click any phrase and it highlights in the sentence,
 > names its role, and shows what happens if you move it.
@@ -164,7 +173,7 @@ sentence and names its grammatical role. One control that fronts or extraposes a
 constituent and marks the result grammatical or not. Inline SVG, keyboard navigable."
 
 ### S8 · Checkout Journey Map
-`diagram` · **product-design** · topics: ux-research, ecommerce · techniques: svg, drag-drop
+`diagram` · **product-design** · topics: ux-research, ecommerce · techniques: svg, drag-drop · design: `clinical`
 
 > Swimlanes across a five-step checkout, with an emotion curve on top and evidence
 > hiding behind every drop-off.
@@ -179,7 +188,7 @@ clicking any step reveals verbatim research quotes and its drop-off rate. Steps 
 dragged to reorder and the curve follows."
 
 ### S9 · Story Bible Timeline — a four-POV novel
-`timeline` · **creative** · topics: writing, fiction · techniques: svg, keyboard-nav
+`timeline` · **creative** · topics: writing, fiction · techniques: svg, keyboard-nav · design: `archival`
 
 > Scrub a novel's chronology and watch what each of four narrators knows at any moment.
 
@@ -193,7 +202,7 @@ at that instant; a second track showing the order the reader receives events in.
 by character, and mark the moments where dramatic irony opens."
 
 ### S10 · Sea Level, 20,000 BCE → 2100
-`timeline` · **data-research**, teaching · topics: climate, geology · techniques: charts, svg
+`timeline` · **data-research**, teaching · topics: climate, geology · techniques: charts, svg · design: `field`
 
 > A log-scaled timeline you can zoom from the last glacial maximum to next Tuesday.
 
@@ -207,7 +216,7 @@ uncertainty envelope, and let the reader zoom smoothly between millennia and dec
 Cite each data regime in a footer."
 
 ### S11 · Herd Immunity Sandbox
-`simulator` · **teaching**, data-research · topics: epidemiology, public-health · techniques: canvas, charts, physics-sim
+`simulator` · **teaching**, data-research · topics: epidemiology, public-health · techniques: canvas, charts, physics-sim · design: `clinical`
 
 > An agent grid where you set R₀, vaccination coverage, and mixing, then watch an
 > outbreak either fizzle or tear through.
@@ -223,7 +232,7 @@ the grid, a re-run button that keeps settings but changes the seed, and a marker
 curve where herd-immunity threshold sits."
 
 ### S12 · Why Adding a Person Didn't Help
-`simulator` · **consulting**, internal-ops · topics: operations, queueing · techniques: charts, canvas
+`simulator` · **consulting**, internal-ops · topics: operations, queueing · techniques: charts, canvas · design: `blueprint`
 
 > A staffing simulator that shows wait times going vertical as utilisation approaches
 > capacity.
@@ -239,7 +248,7 @@ against utilisation live, and highlight the knee of the curve. Include a preset 
 shows adding one agent at 92% utilisation halving the wait."
 
 ### B6 · Slingshot
-`simulator` · **play** · topics: physics, space · techniques: canvas, physics-sim
+`simulator` · **play** · topics: physics, space · techniques: canvas, physics-sim · design: `terminal`
 
 > A gravity-assist sandbox: place bodies, launch a probe, try to get somewhere far on
 > almost no fuel.
@@ -252,7 +261,7 @@ a probe with a fuel budget, and watch trajectories with persistent trails. Time 
 and a reset. Correct n-body integration, no collision gore."
 
 ### B9 · Your First Ninety Days
-`timeline` · **internal-ops** · topics: onboarding, hr · techniques: svg, print-ready
+`timeline` · **internal-ops** · topics: onboarding, hr · techniques: svg, print-ready · design: `riso`
 
 > The onboarding plan as a scrubable timeline instead of a wiki page nobody reads.
 
@@ -269,7 +278,7 @@ week-level and day-level zoom. Printable as a one-page summary for the manager."
 ## Calculate — inputs go in, an answer comes out
 
 ### S13 · Warehouse Automation Payback
-`calculator` · **sales**, consulting · topics: logistics, capex · techniques: charts, print-ready
+`calculator` · **sales**, consulting · topics: logistics, capex · techniques: charts, print-ready · design: `boardroom`
 
 > Throughput, labour cost, and shift pattern in; payback period, five-year NPV, and a
 > sensitivity band out.
@@ -285,7 +294,7 @@ months, five-year NPV, and a tornado chart showing which input the result is mos
 sensitive to. One screen, printable with the entered values."
 
 ### S14 · Repair or Replace?
-`calculator` · **personal** · topics: household, money · techniques: charts
+`calculator` · **personal** · topics: household, money · techniques: charts · design: `toybox`
 
 > Quote in hand, decide whether fixing the machine beats buying a new one.
 
@@ -300,7 +309,7 @@ Output: cost per remaining year for both paths, a break-even chart, and a plain-
 verdict with the one assumption that would flip it."
 
 ### S15 · Weighted Vendor Scorecard
-`comparator` · **consulting**, sales · topics: procurement, decision-making · techniques: drag-drop, charts
+`comparator` · **consulting**, sales · topics: procurement, decision-making · techniques: drag-drop, charts · design: `swiss`
 
 > Five vendors, eight criteria, weights you drag — and a check on whether your winner
 > survives a wobble in those weights.
@@ -315,7 +324,7 @@ far each weight can move before the top choice changes, and flag when the winner
 within noise of second place."
 
 ### S16 · Which Programme, Actually
-`comparator` · **personal**, teaching · topics: education, money · techniques: charts
+`comparator` · **personal**, teaching · topics: education, money · techniques: charts · design: `clinical`
 
 > Graduate programmes side by side on stipend against local cost of living, time to
 > completion, and placement.
@@ -330,7 +339,7 @@ placement rate. Compute real disposable stipend per year. Sortable, weightable, 
 cost-of-living data embedded and cited."
 
 ### S17 · Incident Severity Wizard
-`wizard` · **internal-ops** · topics: reliability, on-call · techniques: keyboard-nav
+`wizard` · **internal-ops** · topics: reliability, on-call · techniques: keyboard-nav · design: `terminal`
 
 > Six questions at 3 a.m. that end in a severity level, a page list, and a copyable
 > incident-channel opener.
@@ -345,7 +354,7 @@ with the reasoning shown. Output the severity, who to page, and a pre-filled inc
 channel opening message with a copy button. Keyboard-only usable."
 
 ### S18 · Positioning Statement Wizard
-`wizard` · **marketing**, sales · topics: positioning, messaging · techniques: keyboard-nav
+`wizard` · **marketing**, sales · topics: positioning, messaging · techniques: keyboard-nav · design: `brutalist`
 
 > Five steps — competitive alternative, unique attribute, value, target, category — into
 > a positioning statement and a messaging hierarchy you can paste into a brief.
@@ -361,7 +370,7 @@ the market frame. Each step shows a worked example alongside the input. Ends in 
 formatted positioning statement plus a three-tier messaging hierarchy, copyable."
 
 ### B5 · Will This Test Finish?
-`calculator` · **product-design**, data-research · topics: experimentation, statistics · techniques: charts
+`calculator` · **product-design**, data-research · topics: experimentation, statistics · techniques: charts · design: `dense`
 
 > Baseline rate, effect you care about, traffic — how long the A/B test runs, and whether
 > to bother.
@@ -380,7 +389,7 @@ effect against test duration. Warn plainly when the test would take over 90 days
 ## Explore — data in, many views out
 
 ### S19 · Reef Bleaching Watch
-`dashboard` · **data-research** · topics: marine-biology, climate · techniques: charts, svg
+`dashboard` · **data-research** · topics: marine-biology, climate · techniques: charts, svg · design: `field`
 
 > Twenty years of bleaching severity across forty reef sites, in four views that talk to
 > each other.
@@ -396,7 +405,7 @@ and a severity histogram — brushing any one filters all the others. Embed a pl
 synthetic dataset and label it clearly as synthetic."
 
 ### S20 · Hiring Funnel
-`dashboard` · **internal-ops** · topics: hiring, people-analytics · techniques: charts
+`dashboard` · **internal-ops** · topics: hiring, people-analytics · techniques: charts · design: `dense`
 
 > Applications to offers by stage, by source, by cohort — with pass-through rates where
 > the drop-offs actually are.
@@ -412,7 +421,7 @@ snapshots, and a stage-conversion panel that suppresses cells below n=10. Note c
 that the data is synthetic."
 
 ### B3 · Engagement Health Board
-`dashboard` · **consulting** · topics: professional-services, delivery · techniques: charts
+`dashboard` · **consulting** · topics: professional-services, delivery · techniques: charts · design: `dense`
 
 > Every live client engagement on one board: burn against budget, milestone slippage,
 > and the one that's about to go red.
@@ -427,7 +436,7 @@ column. Sort by weeks-to-trouble. Clicking an engagement opens its milestone det
 Synthetic data, embedded."
 
 ### S21 · Paste a CSV, Get a Codebook
-`data-explorer` · **data-research** · topics: data-quality, statistics · techniques: file-upload, charts, drag-drop
+`data-explorer` · **data-research** · topics: data-quality, statistics · techniques: file-upload, charts, drag-drop · design: `brutalist`
 
 > Drop in a spreadsheet and get inferred types, distributions, missingness, outliers, and
 > a data dictionary you can paste into a methods section.
@@ -443,7 +452,7 @@ likely keys and likely date columns. Produce a copyable markdown data dictionary
 50k rows without freezing. Nothing leaves the browser — say so in the UI."
 
 ### S22 · Manuscript Pacing Explorer
-`data-explorer` · **creative**, data-research · topics: writing, fiction · techniques: file-upload, charts
+`data-explorer` · **creative**, data-research · topics: writing, fiction · techniques: file-upload, charts · design: `archival`
 
 > Paste a draft and see its shape: sentence-length rhythm, dialogue ratio by chapter,
 > POV drift, and where the pace sags.
@@ -462,7 +471,7 @@ length variance. All local, nothing uploaded."
 ## Engage — a loop, a score, or state that persists
 
 ### S23 · Which Espresso Setup Are You?
-`quiz` · **marketing** · topics: coffee, ecommerce · techniques: svg
+`quiz` · **marketing** · topics: coffee, ecommerce · techniques: svg · design: `deco`
 
 > Eight questions about budget, patience, and how you actually drink coffee, resolving to
 > one of six setups.
@@ -478,7 +487,7 @@ than counting answers. The result explains which answers drove it, shows the run
 and handles ties honestly. No email gate."
 
 ### S24 · False Friends
-`quiz` · **teaching** · topics: spanish, language · techniques: localstorage, keyboard-nav
+`quiz` · **teaching** · topics: spanish, language · techniques: localstorage, keyboard-nav · design: `toybox`
 
 > A drill on the Spanish–English words that betray you, scheduled so you see the ones you
 > keep missing.
@@ -494,7 +503,7 @@ retention per box, let the learner reset, and reveal a memorable disambiguation 
 miss. Fully keyboard-driven."
 
 ### S25 · Lattice
-`game` · **play** · topics: puzzle, geometry · techniques: canvas, drag-drop, localstorage
+`game` · **play** · topics: puzzle, geometry · techniques: canvas, drag-drop, localstorage · design: `swiss`
 
 > Pack the pentominoes into the tray. The tray changes every day, deterministically.
 
@@ -509,7 +518,7 @@ same one, and verify at generation time that it's solvable. Track streaks locall
 offer a spoiler-free share string."
 
 ### S26 · Bullwhip
-`game` · **teaching**, play · topics: operations, supply-chain · techniques: charts, canvas
+`game` · **teaching**, play · topics: operations, supply-chain · techniques: charts, canvas · design: `dense`
 
 > Four tiers of a supply chain, one order per round, and a demand signal that lies to you.
 
@@ -524,7 +533,7 @@ rounds. At the end, chart your orders at each tier against true consumer demand 
 the amplification factor."
 
 ### S27 · Zine Forge
-`generator` · **creative** · topics: publishing, print · techniques: print-ready, svg, localstorage
+`generator` · **creative** · topics: publishing, print · techniques: print-ready, svg, localstorage · design: `riso`
 
 > Type eight pages, pick a fold, get a correctly imposed sheet that becomes a zine when
 > you cut it once.
@@ -540,7 +549,7 @@ rotation, crop marks, and a fold guide. Live preview of the folded result. Save 
 locally."
 
 ### S28 · Truchet Studio
-`generator` · **play**, creative · topics: generative-art, geometry · techniques: canvas, svg
+`generator` · **play**, creative · topics: generative-art, geometry · techniques: canvas, svg · design: `deco`
 
 > Truchet tiles, six rule sets, a seed you can share, and a PNG at print resolution.
 
@@ -554,7 +563,7 @@ palette, density, curvature, and jitter, driven by a seeded PRNG shown as a shar
 string. Live canvas, export PNG at 4× resolution. Every default should look good."
 
 ### B2 · Fixture Forge
-`generator` · **product-design** · topics: prototyping, data · techniques: file-upload, drag-drop
+`generator` · **product-design** · topics: prototyping, data · techniques: file-upload, drag-drop · design: `terminal`
 
 > Describe a shape, get believable seed data — names, addresses, timestamps, prices — as
 > JSON or CSV.
@@ -570,7 +579,7 @@ very long names, non-Latin characters, empty optionals. Download as JSON or CSV,
 it's reproducible."
 
 ### B4 · Spot the Phish
-`quiz` · **internal-ops** · topics: security, training · techniques: svg, localstorage
+`quiz` · **internal-ops** · topics: security, training · techniques: svg, localstorage · design: `clinical`
 
 > Twelve rendered emails. Click what's wrong with each one before the timer runs out.
 
@@ -585,7 +594,7 @@ urgency framing, mismatched link, attachment type). Score on precision and recal
 with a personalised summary of which tell types they missed most."
 
 ### S29 · Seedling Log
-`tracker` · **personal** · topics: gardening, food · techniques: localstorage, charts
+`tracker` · **personal** · topics: gardening, food · techniques: localstorage, charts · design: `field`
 
 > Sowings, germination dates, transplants, and the succession schedule that keeps the bed
 > producing.
@@ -601,7 +610,7 @@ schedule working backwards from it. Show a season timeline and adjust future est
 from logged actuals. Persist locally, export and import JSON."
 
 ### S30 · Tempo Ladder
-`tracker` · **creative**, personal · topics: music, practice · techniques: localstorage, charts
+`tracker` · **creative**, personal · topics: music, practice · techniques: localstorage, charts · design: `deco`
 
 > Log practice by piece and tempo, and watch the ladder you're actually climbing.
 
@@ -616,7 +625,7 @@ show a calendar heatmap of practice, and surface the passages you've avoided lon
 Local storage only, with JSON export."
 
 ### B1 · Guest Checkout — a product brief
-`one-pager` · **product-design** · topics: product-management, ecommerce · techniques: print-ready, svg
+`one-pager` · **product-design** · topics: product-management, ecommerce · techniques: print-ready, svg · design: `swiss`
 
 > One page: the problem with evidence, the bet, what we're not doing, and the decision
 > being asked for.
@@ -673,19 +682,25 @@ play/calculate, play/explore) stay empty.
 
 Five entries that between them prove every part of the pipeline — a chart-heavy print
 path, canvas, local persistence, file input, and a print-ready layout — while landing in
-five different families and five different use cases:
+five different families, five different use cases, and five unrelated visual treatments,
+so the earliest version of the grid already reads as varied rather than as one template:
 
-1. **S12 · Why Adding a Person Didn't Help** — canvas + charts, the most quotable result
-   in the set.
-2. **S21 · Paste a CSV, Get a Codebook** — file input, and the entry most likely to be
-   bookmarked rather than admired.
-3. **S17 · Incident Severity Wizard** — small, complete, and the clearest demonstration
-   that `wizard` ≠ `quiz`.
-4. **S5 · State of the Municipal Tree Canopy** — proves `report` is a real style and
-   exercises the print path.
-5. **S25 · Lattice** — the daily-seed trick, and the entry people share.
+1. **S12 · Why Adding a Person Didn't Help** — `blueprint`. Canvas plus charts, and the
+   most quotable result in the set.
+2. **S21 · Paste a CSV, Get a Codebook** — `brutalist`. File input, and the entry most
+   likely to be bookmarked rather than admired.
+3. **S17 · Incident Severity Wizard** — `terminal`. Small, complete, and the clearest
+   demonstration that `wizard` ≠ `quiz`.
+4. **S5 · State of the Municipal Tree Canopy** — `archival`. Proves `report` is a real
+   style and exercises the print path.
+5. **S25 · Lattice** — `swiss`. The daily-seed trick, and the entry people share.
 
 ### Open questions
+
+- **Is `design` a filter or just a seeding constraint?** It ships as secondary navigation
+  like `techniques`, and the §9 Phase 4 instrumentation will say whether visitors actually
+  filter on it. If they do, it earns a place in the main filter bar; if they don't, it
+  still did its job by keeping the wall varied.
 
 - **Synthetic data disclosure.** Several entries embed plausible-but-invented datasets.
   Worth a house rule: synthetic data is labelled in the UI, not just the metadata.

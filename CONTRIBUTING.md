@@ -58,6 +58,7 @@ use_case: [consulting, sales]   # 1–2, first is primary
 style: calculator               # exactly one, from taxonomy.yaml
 topics: [finance, startups]
 techniques: [charts, localstorage]
+design: boardroom               # exactly one, from taxonomy.yaml
 
 source: artifact.html
 
@@ -82,6 +83,17 @@ contains. A deck full of charts is still a `deck`. A report with a calculator ha
 down is still a `report`. When two genuinely fit, take the more specific one —
 `simulator` over `diagram`, `comparator` over `dashboard`.
 
+### Picking a design
+
+The gallery is browsed as a wall of thumbnails, and neither `use_case` nor `style` tells
+you what an entry looks like. `design` is the visual treatment — twelve of them, with
+recipes in [docs/design-treatments.md](docs/design-treatments.md).
+
+Pick the one the *subject* argues for, not the one you like most: a phosphor terminal
+suits an on-call runbook and fights a gardening log. CI warns when your `style` +
+`design` pair already exists, because two entries that look alike are one entry as far
+as a visitor scrolling the grid is concerned.
+
 ### Picking a use case
 
 Use cases are **jobs, not industries**. A healthcare ROI calculator is `sales` with
@@ -96,7 +108,7 @@ every card. Entries without one are accepted but rank below entries with one.
 
 ## Changing the vocabulary
 
-New terms in `use_case`, `style`, or `techniques` go through their own PR against
+New terms in `use_case`, `style`, `design`, or `techniques` go through their own PR against
 `taxonomy.yaml`, with a rationale and at least three existing entries that would move.
 Nobody invents a term inside a submission.
 
